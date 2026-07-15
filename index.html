@@ -357,7 +357,7 @@
 </main>
 
 <footer>
-  BOARD SAVES AUTOMATICALLY · BINGO &amp; WORKSHOP TIMES CHANGE — CALL AHEAD
+  BOARD SAVES AUTOMATICALLY · BINGO &amp; WORKSHOP TIMES CHANGE — CALL AHEAD · <span id="buildTag"></span>
 </footer>
 
 <div class="toast" id="toast" role="status"></div>
@@ -379,10 +379,10 @@ const FIREBASE_CONFIG = {
   databaseURL: "https://jason-lilly-default-rtdb.firebaseio.com",
   projectId: "jason-lilly"
 };
-/* v3 path: revision-stamped slices. Old cached copies of this page write
+/* v4 path: logical-clock revisions. Old cached copies of this page write
    to the old paths and can't corrupt this data. */
-const BOARD_PATH = "boards/anniversary-2026-v3";
-const SCHEMA = 3;
+const BOARD_PATH = "boards/anniversary-2026-v4";
+const SCHEMA = 4;
 
 /* ── Activity data ─────────────────────────────────────────
    weather: sun | rain | either
@@ -431,20 +431,51 @@ const PRESETS = {
 /* ── State ─────────────────────────────────────────────────
    `state` is this device's copy of the board. Every synced slice —
    each day's list, each favorite, each idea's edits — carries a
-   revision number in `revs`. A write stamps a new (strictly higher)
-   revision; an incoming slice is applied only if its revision is
-   NEWER than ours, and if the server is holding something OLDER we
-   push our copy back up. Convergence is deterministic — never a
-   function of which message happened to arrive last. Lists travel
-   JSON-encoded because Realtime Database silently deletes empty
-   arrays, which would otherwise resurrect cleared days.            */
-const STORAGE_KEY = "anniv-chart-v3";
+   LOGICAL revision in `revs`: { n, by }. `n` is a counter (highest
+   revision ever seen on that slice + 1 when we write — a Lamport
+   clock), `by` is this device's random id, used only to break ties
+   when two devices write the same n concurrently. Wall clocks are
+   never compared across devices — phone clock skew must not decide
+   whose edit wins. An incoming slice is applied only if (n, by) is
+   ordered after ours; the echo of our own write is ignored; and if
+   the server holds something ordered BEFORE ours we push our copy
+   back up (self-heal). Lists travel JSON-encoded because Realtime
+   Database silently deletes empty arrays, which would otherwise
+   resurrect cleared days.                                          */
+const STORAGE_KEY = "anniv-chart-v4";
+
+let DEVICE_ID;
+try{
+  DEVICE_ID = localStorage.getItem("anniv-device-id");
+  if(!DEVICE_ID){
+    DEVICE_ID = Math.random().toString(36).slice(2,10);
+    localStorage.setItem("anniv-device-id", DEVICE_ID);
+  }
+}catch(e){ DEVICE_ID = Math.random().toString(36).slice(2,10); }
 
 function defaultState(){
   return { order:{ fri:[], sat:[], sun:[], locker:ACTIVITIES.map(a=>a.id) }, custom:{}, favorites:{}, overrides:{} };
 }
 let state = defaultState();
-let revs = {};   // slice path → last revision seen/written
+let revs = {};   // slice path → { n, by }
+
+function revOf(path){
+  const r = revs[path];
+  return (r && typeof r.n === "number") ? r : { n:0, by:"" };
+}
+/* Stamp a slice as newly written by this device. */
+function bump(path){
+  revs[path] = { n: revOf(path).n + 1, by: DEVICE_ID };
+}
+/* Is a remote entry ordered strictly after our local revision? */
+function isNewer(entry, path){
+  const l = revOf(path);
+  return entry.rev > l.n || (entry.rev === l.n && (entry.by||"") > l.by);
+}
+function isEcho(entry, path){
+  const l = revOf(path);
+  return entry.rev === l.n && (entry.by||"") === l.by;
+}
 
 function loadLocal(){
   try{
@@ -472,29 +503,24 @@ function getActivity(id){
   return ov ? {...base, ...ov} : base;
 }
 
-/* New revision for a slice: wall clock, but always strictly greater
-   than anything we've already seen — so a device with a slow clock
-   still wins over data it has knowingly superseded. */
-function stamp(path){
-  revs[path] = Math.max(Date.now(), (revs[path]||0) + 1);
-  return revs[path];
-}
-/* Envelope builders — what actually gets stored per slice. */
+/* Envelope builders — what actually gets stored per slice. These use
+   the CURRENT revision, so they serve both fresh writes (call bump()
+   first) and self-heal re-pushes (send as-is, no restamp). */
 function orderEntry(key){
-  const p = "order/"+key;
-  return { rev: stamp(p), ids: JSON.stringify(state.order[key]) };
+  const r = revOf("order/"+key);
+  return { rev: r.n, by: r.by, ids: JSON.stringify(state.order[key]) };
 }
 function favEntry(id){
-  const p = "favorites/"+id;
-  return { rev: stamp(p), on: !!state.favorites[id] };
+  const r = revOf("favorites/"+id);
+  return { rev: r.n, by: r.by, on: !!state.favorites[id] };
 }
 function overrideEntry(id){
-  const p = "overrides/"+id;
-  return { rev: stamp(p), data: state.overrides[id] };
+  const r = revOf("overrides/"+id);
+  return { rev: r.n, by: r.by, data: state.overrides[id] || null };
 }
 function customEntry(id){
-  const p = "custom/"+id;
-  return { rev: stamp(p), data: state.custom[id] };
+  const r = revOf("custom/"+id);
+  return { rev: r.n, by: r.by, data: state.custom[id] || null };
 }
 
 /* Persist locally and (if syncing) send a multi-path patch. */
@@ -515,6 +541,7 @@ function commitOrderFromDOM(){
   for(const key of ["fri","sat","sun","locker"]){
     if(JSON.stringify(next[key]) !== JSON.stringify(state.order[key])){
       state.order[key] = next[key];
+      bump("order/"+key);
       patch["order/"+key] = orderEntry(key);
     }
   }
@@ -641,6 +668,7 @@ document.addEventListener("click", e=>{
     if(state.favorites[id]) delete state.favorites[id];
     else state.favorites[id] = true;
     syncFavIcon(card);
+    bump("favorites/"+id);
     sendUpdate({ ["favorites/"+id]: favEntry(id) });
     return;
   }
@@ -675,6 +703,7 @@ document.addEventListener("click", e=>{
     state.overrides[id] = override;
     populateCard(card, getActivity(id));
     card.classList.remove("editing");
+    bump("overrides/"+id);
     sendUpdate({ ["overrides/"+id]: overrideEntry(id) });
     toast("Saved");
     return;
@@ -723,6 +752,7 @@ document.querySelectorAll(".preset-chip").forEach(btn=>{
                    .concat(Object.keys(state.custom));
     state.order = { fri:[...p.fri], sat:[...p.sat], sun:[...p.sun], locker };
     renderAll();
+    ["fri","sat","sun","locker"].forEach(k=>bump("order/"+k));
     sendUpdate({ "order/fri":orderEntry("fri"), "order/sat":orderEntry("sat"), "order/sun":orderEntry("sun"), "order/locker":orderEntry("locker") });
     toast(`Loaded "${btn.textContent.trim()}" — now make it yours`);
   });
@@ -744,6 +774,8 @@ document.getElementById("addBtn").addEventListener("click", ()=>{
   document.getElementById("locker").prepend(cardEl(act));
   document.getElementById("newTitle").value="";
   document.getElementById("newPlace").value="";
+  bump("custom/"+act.id);
+  bump("order/locker");
   sendUpdate({ ["custom/"+act.id]: customEntry(act.id), "order/locker": orderEntry("locker") });
   toast("Added to the locker");
 });
@@ -769,6 +801,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
   if(!confirm("Clear the board and return every idea to the locker? (Favorites and notes stay.)")) return;
   state.order = { fri:[], sat:[], sun:[], locker: ACTIVITIES.map(a=>a.id).concat(Object.keys(state.custom)) };
   renderAll();
+  ["fri","sat","sun","locker"].forEach(k=>bump("order/"+k));
   sendUpdate({ "order/fri":orderEntry("fri"), "order/sat":orderEntry("sat"), "order/sun":orderEntry("sun"), "order/locker":orderEntry("locker") });
   toast("Fresh chart");
 });
@@ -822,22 +855,23 @@ function scheduleRender(){
 
 /* ── Revision merging ──────────────────────────────────────
    Each merge answers one question per slice: is the incoming copy
-   newer than mine? Newer → apply it. Older → the server is stale
+   ordered after mine (higher n, or same n from a device whose id
+   sorts higher)? After → apply it. Before → the server is stale
    (e.g. my last write never landed before a refresh), so push my
-   copy back up. Equal → it's the echo of my own write; ignore.   */
+   copy back up, unchanged — no restamp, so this is idempotent.
+   Exactly equal → it's the echo of my own write; ignore.        */
 function mergeOrder(key, entry){
   const path = "order/"+key;
-  const localRev = revs[path]||0;
   if(!entry || typeof entry.rev !== "number"){
-    if(localRev > 0) pushOrder(key);   // server lost/never had it — repair
+    if(revOf(path).n > 0) pushOrder(key);   // server lost/never had it — repair
     return;
   }
-  if(entry.rev > localRev){
+  if(isNewer(entry, path)){
     try{ state.order[key] = JSON.parse(entry.ids||"[]"); }catch(e){ return; }
-    revs[path] = entry.rev;
+    revs[path] = { n: entry.rev, by: entry.by||"" };
     persistLocal();
     scheduleRender();
-  } else if(entry.rev < localRev){
+  } else if(!isEcho(entry, path)){
     pushOrder(key);
   }
 }
@@ -848,12 +882,11 @@ function mergeKeyedMap(slice, remoteMap, applyFn, repushFn){
   for(const [id, entry] of Object.entries(remoteMap)){
     if(!entry || typeof entry.rev !== "number") continue;
     const path = slice+"/"+id;
-    const localRev = revs[path]||0;
-    if(entry.rev > localRev){
-      revs[path] = entry.rev;
+    if(isNewer(entry, path)){
+      revs[path] = { n: entry.rev, by: entry.by||"" };
       applyFn(id, entry);
       changed = true;
-    } else if(entry.rev < localRev){
+    } else if(!isEcho(entry, path)){
       repushFn(id);
     }
   }
@@ -861,7 +894,7 @@ function mergeKeyedMap(slice, remoteMap, applyFn, repushFn){
   for(const path of Object.keys(revs)){
     if(path.startsWith(slice+"/")){
       const id = path.slice(slice.length+1);
-      if(!(id in remoteMap)) repushFn(id);
+      if(!(id in remoteMap) && revOf(path).n > 0) repushFn(id);
     }
   }
   if(changed) persistLocal();
@@ -874,24 +907,30 @@ state = loaded.state;
 revs = loaded.revs || {};
 renderAll();
 
+// Build stamp: if the two devices show different numbers here, one of
+// them is running a stale cached copy of the page — hard-refresh it.
+document.getElementById("buildTag").textContent = "BUILD " + SCHEMA;
+console.log("Anniversary Chart — build", SCHEMA, "device", DEVICE_ID);
+
 if(fbRoot){
   setSyncStatus("connecting");
 
   // Presence: a per-tab node that Firebase removes server-side when the
-  // connection drops, so the device count is trustworthy.
+  // connection drops. Stores the device id, so two tabs on one phone
+  // count as one device.
   const presenceRef = fbRoot.child("presence").push();
   firebase.database().ref(".info/connected").on("value", snap => {
     if(dataError) return;
     if(snap.val() === true){
       presenceRef.onDisconnect().remove();
-      presenceRef.set(true);
+      presenceRef.set(DEVICE_ID);
       setSyncStatus("synced");
     } else {
       setSyncStatus("connecting");
     }
   });
   fbRoot.child("presence").on("value", snap => {
-    deviceCount = snap.numChildren();
+    deviceCount = new Set(Object.values(snap.val()||{})).size;
     if(document.getElementById("syncBadge").dataset.state === "synced") setSyncStatus("synced");
   });
 
