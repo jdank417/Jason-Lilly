@@ -721,6 +721,16 @@ render(initial);
 
 if(fbRef){
   setSyncStatus("connecting");
+  let dataError = false;
+
+  // .info/connected is a special Firebase path that reliably reports the
+  // actual socket state — this is what drives the badge, so it can't get
+  // stuck if the board-data listener itself stalls.
+  firebase.database().ref(".info/connected").on("value", snap => {
+    if(dataError) return;
+    setSyncStatus(snap.val() === true ? "synced" : "connecting");
+  });
+
   fbRef.on("value", snap => {
     const remote = snap.val();
     if(remote){
@@ -731,8 +741,16 @@ if(fbRef){
     } else {
       fbRef.set(currentState());
     }
-    setSyncStatus("synced");
-  }, () => setSyncStatus("offline"));
+  }, () => { dataError = true; setSyncStatus("offline", "Sync error — check database rules"); });
+
+  // Fallback in case even .info/connected never reports in (e.g. blocked
+  // socket) — don't leave the badge stuck on "Connecting…" forever.
+  setTimeout(()=>{
+    const badge = document.getElementById("syncBadge");
+    if(badge.dataset.state === "connecting"){
+      setSyncStatus("offline", "Couldn't connect — check your internet or database rules");
+    }
+  }, 8000);
 }
 </script>
 </body>
