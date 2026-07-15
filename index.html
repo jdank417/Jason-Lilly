@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Anniversary Chart · July 31 – August 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Public+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16283D;
+    --ink-soft:#3A4C61;
+    --fog:#EDF1EF;
+    --card:#FBFCFA;
+    --gold:#D9A62E;
+    --gold-deep:#B8871B;
+    --kelp:#33654F;
+    --rain:#4A6FA5;
+    --signal:#B3402F;
+    --line:#C7D1CD;
+    --shadow:0 2px 10px rgba(22,40,61,.10);
+    --radius:10px;
+    --font-display:"Bricolage Grotesque",sans-serif;
+    --font-body:"Public Sans",sans-serif;
+    --font-mono:"IBM Plex Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:var(--font-body);
+    color:var(--ink);
+    background-color:var(--fog);
+    background-image:
+      linear-gradient(rgba(22,40,61,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(22,40,61,.045) 1px, transparent 1px);
+    background-size:56px 56px;
+    min-height:100vh;
+  }
+  button{font-family:inherit;cursor:pointer}
+
+  /* ── Header: the harbor log strip ─────────────────────── */
+  header{
+    background:var(--ink);
+    color:var(--fog);
+    padding:26px 22px 22px;
+    border-bottom:4px solid var(--gold);
+  }
+  .header-inner{max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 24px}
+  .eyebrow{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);width:100%}
+  h1{font-family:var(--font-display);font-weight:800;font-size:clamp(1.6rem,4.5vw,2.6rem);line-height:1.05}
+  .dates{font-family:var(--font-mono);font-size:.85rem;color:#B9C6D2}
+  .header-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  .btn{
+    border:1.5px solid var(--line);
+    background:var(--card);
+    color:var(--ink);
+    border-radius:999px;
+    padding:8px 16px;
+    font-size:.82rem;
+    font-weight:600;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+  .btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+  .btn-dark{background:transparent;color:var(--fog);border-color:#4A5C71}
+  .btn-gold{background:var(--gold);border-color:var(--gold-deep);color:var(--ink)}
+
+  /* ── Preset bar ────────────────────────────────────────── */
+  .preset-bar{
+    max-width:1280px;margin:18px auto 0;padding:0 22px;
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .preset-bar label{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+  .preset-chip{
+    border:1.5px solid var(--ink);
+    background:var(--card);
+    border-radius:6px;
+    padding:7px 13px;
+    font-size:.8rem;
+    font-weight:600;
+    position:relative;
+  }
+  .preset-chip:hover{background:var(--ink);color:var(--fog)}
+  .preset-chip:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+  /* ── Layout ────────────────────────────────────────────── */
+  .layout{
+    max-width:1280px;margin:20px auto 60px;padding:0 22px;
+    display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start;
+  }
+  @media(max-width:900px){.layout{grid-template-columns:1fr}}
+
+  /* ── Idea locker ───────────────────────────────────────── */
+  .locker{
+    background:var(--card);
+    border:1.5px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    position:sticky;top:14px;
+    max-height:calc(100vh - 28px);
+    display:flex;flex-direction:column;
+    overflow:hidden;
+  }
+  @media(max-width:900px){.locker{position:static;max-height:none}}
+  .locker-head{
+    padding:14px 16px 10px;
+    border-bottom:1.5px solid var(--line);
+  }
+  .locker-head h2{font-family:var(--font-display);font-size:1.05rem;font-weight:800}
+  .locker-head p{font-size:.76rem;color:var(--ink-soft);margin-top:2px}
+  .filters{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px;border-bottom:1.5px solid var(--line)}
+  .filter{
+    border:1px solid var(--line);
+    background:var(--fog);
+    border-radius:999px;
+    padding:4px 10px;
+    font-size:.72rem;
+    font-weight:600;
+    color:var(--ink-soft);
+  }
+  .filter[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--fog)}
+  .filter:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
+  .locker-list{padding:12px;overflow-y:auto;flex:1;min-height:120px}
+  @media(max-width:900px){.locker-list{max-height:320px}}
+  .locker-empty{font-size:.8rem;color:var(--ink-soft);padding:10px;text-align:center}
+
+  /* ── Day columns ───────────────────────────────────────── */
+  .days{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:1100px){.days{grid-template-columns:1fr}}
+  .day{
+    background:var(--card);
+    border:1.5px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    display:flex;flex-direction:column;
+    overflow:hidden;
+  }
+  .day-head{
+    background:var(--ink);
+    color:var(--fog);
+    padding:12px 14px 10px;
+    position:relative;
+  }
+  .day-head::after{ /* signal-flag tick */
+    content:"";
+    position:absolute;right:0;top:0;
+    width:26px;height:26px;
+    background:linear-gradient(135deg, var(--gold) 50%, transparent 50%);
+    transform:rotate(90deg);
+  }
+  .day-num{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+  .day-head h3{font-family:var(--font-display);font-size:1.15rem;font-weight:800;line-height:1.15}
+  .day-note{font-size:.72rem;color:#B9C6D2;margin-top:3px}
+  .day-list{padding:12px;flex:1;min-height:160px}
+  .day-list.drag-over{background:#F3EDD8}
+
+  /* ── Cards ─────────────────────────────────────────────── */
+  .card-item{
+    background:var(--fog);
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    padding:10px 12px 10px 14px;
+    margin-bottom:10px;
+    position:relative;
+    cursor:grab;
+    touch-action:none;
+  }
+  .card-item:active{cursor:grabbing}
+  .card-item::before{ /* halyard edge */
+    content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
+    border-radius:8px 0 0 8px;background:var(--gold);
+  }
+  .card-item[data-weather="sun"]::before{background:var(--kelp)}
+  .card-item[data-weather="rain"]::before{background:var(--rain)}
+  .sortable-ghost{opacity:.35}
+  .sortable-drag{box-shadow:0 8px 24px rgba(22,40,61,.25)}
+  .card-top{display:flex;align-items:flex-start;gap:8px}
+  .card-title{font-weight:700;font-size:.88rem;line-height:1.25;flex:1}
+  .pennant{ /* signature: pennant-shaped weather badge */
+    flex-shrink:0;
+    font-family:var(--font-mono);
+    font-size:.6rem;
+    font-weight:500;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:#fff;
+    padding:3px 14px 3px 7px;
+    clip-path:polygon(0 0, 100% 0, calc(100% - 9px) 50%, 100% 100%, 0 100%);
+  }
+  .pennant.sun{background:var(--kelp)}
+  .pennant.rain{background:var(--rain)}
+  .pennant.either{background:var(--gold-deep)}
+  .card-place{font-family:var(--font-mono);font-size:.68rem;color:var(--ink-soft);margin-top:2px}
+  .card-note{font-size:.75rem;color:var(--ink-soft);margin-top:5px;line-height:1.4}
+  .card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+  .tag{font-size:.64rem;font-weight:600;color:var(--ink-soft);background:#E2E8E5;border-radius:4px;padding:2px 6px}
+  .card-remove{
+    position:absolute;top:6px;right:6px;
+    display:none;
+    border:none;background:transparent;color:var(--signal);
+    font-size:.9rem;line-height:1;padding:4px;
+    border-radius:4px;
+  }
+  .day-list .card-remove{display:block}
+  .card-remove:hover{background:#F4E0DC}
+  .card-remove:focus-visible{outline:2px solid var(--signal)}
+  .day-list .pennant{margin-right:20px}
+
+  /* ── Add idea + footer ─────────────────────────────────── */
+  .add-idea{padding:12px 16px;border-top:1.5px solid var(--line)}
+  .add-idea summary{font-size:.78rem;font-weight:700;cursor:pointer;color:var(--ink-soft)}
+  .add-idea input,.add-idea select{
+    width:100%;margin-top:8px;padding:8px 10px;
+    border:1.5px solid var(--line);border-radius:6px;
+    font-family:inherit;font-size:.8rem;background:var(--fog);color:var(--ink);
+  }
+  .add-idea input:focus-visible,.add-idea select:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
+  .add-idea button{margin-top:8px;width:100%}
+  footer{
+    max-width:1280px;margin:0 auto 40px;padding:0 22px;
+    font-family:var(--font-mono);font-size:.7rem;color:var(--ink-soft);
+  }
+  .toast{
+    position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);
+    background:var(--ink);color:var(--fog);
+    padding:10px 18px;border-radius:999px;font-size:.82rem;
+    box-shadow:var(--shadow);transition:transform .25s ease;z-index:50;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  @media(prefers-reduced-motion:reduce){
+    *{transition:none!important;animation:none!important}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <span class="eyebrow">One year · charted together</span>
+    <h1>The Anniversary Chart</h1>
+    <span class="dates">FRI JUL 31 — SUN AUG 2, 2026 · Salem, MA home port</span>
+    <div class="header-actions">
+      <button class="btn btn-gold" id="copyBtn">Copy plan as text</button>
+      <button class="btn btn-dark" id="resetBtn">Reset board</button>
+    </div>
+  </div>
+</header>
+
+<div class="preset-bar">
+  <label>Load a starter plan:</label>
+  <button class="preset-chip" data-preset="harbor">Harbor Classic</button>
+  <button class="preset-chip" data-preset="capeann">Cape Ann Loop</button>
+  <button class="preset-chip" data-preset="ipswich">Ipswich &amp; Essex</button>
+  <button class="preset-chip" data-preset="rainy">Rainy-Day Rescue</button>
+  <button class="preset-chip" data-preset="staycation">Salem Staycation</button>
+</div>
+
+<main class="layout">
+
+  <aside class="locker" aria-label="Idea locker">
+    <div class="locker-head">
+      <h2>Idea Locker</h2>
+      <p>Drag ideas onto a day. Colored edge = best weather.</p>
+    </div>
+    <div class="filters" role="group" aria-label="Filter ideas">
+      <button class="filter" data-filter="sun" aria-pressed="false">Sun</button>
+      <button class="filter" data-filter="rain" aria-pressed="false">Rain</button>
+      <button class="filter" data-filter="thrift" aria-pressed="false">Thrift</button>
+      <button class="filter" data-filter="games" aria-pressed="false">Casino &amp; Bingo</button>
+      <button class="filter" data-filter="crafts" aria-pressed="false">Crafts</button>
+      <button class="filter" data-filter="nature" aria-pressed="false">Nature</button>
+      <button class="filter" data-filter="sailing" aria-pressed="false">Sailing</button>
+      <button class="filter" data-filter="food" aria-pressed="false">Food</button>
+    </div>
+    <div class="locker-list" id="locker"></div>
+    <details class="add-idea">
+      <summary>+ Add your own idea</summary>
+      <input type="text" id="newTitle" placeholder="Idea (e.g. Mini golf rematch)" maxlength="60">
+      <input type="text" id="newPlace" placeholder="Place (optional)" maxlength="60">
+      <select id="newWeather">
+        <option value="either">Any weather</option>
+        <option value="sun">Good weather</option>
+        <option value="rain">Bad weather</option>
+      </select>
+      <button class="btn" id="addBtn">Add to locker</button>
+    </details>
+  </aside>
+
+  <section class="days" aria-label="Weekend days">
+    <div class="day">
+      <div class="day-head">
+        <span class="day-num">Day 01 · Friday</span>
+        <h3>July 31</h3>
+        <p class="day-note">Easy-pace day — keep it gentle</p>
+      </div>
+      <div class="day-list" id="day-fri" data-day="Friday, July 31"></div>
+    </div>
+    <div class="day">
+      <div class="day-head">
+        <span class="day-num">Day 02 · Saturday</span>
+        <h3>August 1</h3>
+        <p class="day-note">Waltham move day — plan around the boxes</p>
+      </div>
+      <div class="day-list" id="day-sat" data-day="Saturday, August 1"></div>
+    </div>
+    <div class="day">
+      <div class="day-head">
+        <span class="day-num">Day 03 · Sunday</span>
+        <h3>August 2</h3>
+        <p class="day-note">The main event</p>
+      </div>
+      <div class="day-list" id="day-sun" data-day="Sunday, August 2"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  BOARD SAVES AUTOMATICALLY IN THIS BROWSER · BINGO &amp; WORKSHOP TIMES CHANGE — CALL AHEAD
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<script>
+/* ── Activity data ─────────────────────────────────────────
+   weather: sun | rain | either
+   tags: thrift, games, crafts, nature, sailing, food        */
+const ACTIVITIES = [
+ {id:"mhd-stroll", title:"Marblehead Old Town stroll", place:"Marblehead", weather:"sun", tags:["nature"], note:"Winding lanes, harbor views, gallery windows."},
+ {id:"crocker", title:"Crocker Park & Fort Sewall overlook", place:"Marblehead", weather:"sun", tags:["nature"], note:"Best free harbor seats on the North Shore."},
+ {id:"eyc-dinner", title:"Drinks or dinner at Eastern Yacht Club", place:"Marblehead", weather:"either", tags:["food","sailing"], note:"Porch if it's nice, dining room if it's not."},
+ {id:"eyc-sail", title:"Harbor sail out of EYC", place:"Marblehead", weather:"sun", tags:["sailing","nature"], note:"Doctor-permitting — keep it a calm cruise."},
+ {id:"pem", title:"Peabody Essex Museum", place:"Salem", weather:"rain", tags:["crafts"], note:"World-class art and maritime galleries, 10 min from home."},
+ {id:"salem-thrift", title:"Salem vintage & consignment crawl", place:"Salem", weather:"either", tags:["thrift"], note:"Downtown consignment, vintage, and oddities shops."},
+ {id:"bingo-fri", title:"Friday night bingo, St. John the Baptist", place:"Salem · Fri 6:30 PM", weather:"either", tags:["games"], note:"32 Saint Peter St. Call 978-744-1278 to confirm."},
+ {id:"bingo-sat", title:"Saturday bingo, Saint Mary Italian Church", place:"Salem · Sat 6:45 PM", weather:"either", tags:["games"], note:"56 Margin St. Call 978-745-9740 to confirm."},
+ {id:"moody", title:"Moody Street food crawl", place:"Waltham", weather:"either", tags:["food"], note:"Waltham's restaurant row — celebrate the new keys."},
+ {id:"charles", title:"Charles River walkway", place:"Waltham", weather:"sun", tags:["nature"], note:"Flat, easy riverside loop off Moody St."},
+ {id:"waltham-thrift", title:"Waltham thrift stops", place:"near Moody St", weather:"either", tags:["thrift"], note:"Secondhand browsing between moving trips."},
+ {id:"decordova", title:"deCordova Sculpture Park & Museum", place:"Lincoln", weather:"sun", tags:["crafts","nature"], note:"Art in the woods, 15 min from Waltham. Museum covers rain."},
+ {id:"encore", title:"Encore Boston Harbor", place:"Everett", weather:"either", tags:["games","food"], note:"On the drive Waltham → Salem. Casino date night."},
+ {id:"nbpt", title:"Newburyport downtown + Oldies Marketplace", place:"Newburyport", weather:"either", tags:["thrift"], note:"Big antique/vintage warehouse plus brick downtown."},
+ {id:"plum", title:"Parker River Wildlife Refuge", place:"Plum Island", weather:"sun", tags:["nature"], note:"Boardwalks, dunes, birds — drive-through friendly."},
+ {id:"maudslay", title:"Maudslay State Park", place:"Newburyport", weather:"sun", tags:["nature"], note:"Old estate grounds and gardens along the Merrimack."},
+ {id:"bearskin", title:"Bearskin Neck shops & galleries", place:"Rockport", weather:"sun", tags:["thrift","crafts"], note:"Artist studios, fudge, and Motif No. 1."},
+ {id:"halibut", title:"Halibut Point State Park", place:"Rockport", weather:"sun", tags:["nature"], note:"Quarry-to-ocean views; flat granite paths."},
+ {id:"rockyneck", title:"Rocky Neck Art Colony", place:"Gloucester", weather:"sun", tags:["crafts"], note:"One of America's oldest working art colonies."},
+ {id:"capeannmus", title:"Cape Ann Museum", place:"Gloucester", weather:"rain", tags:["crafts"], note:"Fitz Henry Lane seascapes; cozy on a gray day."},
+ {id:"woodmans", title:"Fried clams at Woodman's", place:"Essex", weather:"either", tags:["food"], note:"The classic roadside clam shack, since 1914."},
+ {id:"essex-antique", title:"Essex antique shop crawl", place:"Essex", weather:"either", tags:["thrift"], note:"A whole town of antique barns on Route 133."},
+ {id:"crane", title:"Crane Estate grounds at Castle Hill", place:"Ipswich", weather:"sun", tags:["nature"], note:"Grand Allée lawn rolling straight to the sea."},
+ {id:"pottery", title:"Pottery-painting session", place:"North Shore studio", weather:"rain", tags:["crafts"], note:"Book a walk-in slot; take home a keepsake."},
+ {id:"candles", title:"Candle-pouring workshop", place:"Salem area", weather:"rain", tags:["crafts"], note:"Anniversary-scented — check weekend openings."},
+ {id:"willows", title:"Salem Willows arcade & waterfront", place:"Salem", weather:"either", tags:["games","nature"], note:"Skee-ball, popcorn, and a breezy point park."},
+ {id:"derby", title:"Sunset walk to Derby Wharf Light", place:"Salem", weather:"sun", tags:["nature"], note:"Ten flat minutes out to the little lighthouse."},
+ {id:"portsmouth", title:"Portsmouth day trip", place:"Portsmouth, NH", weather:"sun", tags:["thrift","nature","food"], note:"~50 min north: Market Square, Prescott Park, vintage shops."},
+ {id:"cozy-lunch", title:"Long cozy lunch", place:"Salem", weather:"rain", tags:["food"], note:"Fireplace-adjacent, no agenda."},
+ {id:"movie-night", title:"Takeout + movie recovery night", place:"Home", weather:"either", tags:["food"], note:"Zero jostling guaranteed."}
+];
+
+const PRESETS = {
+ harbor:{ fri:["mhd-stroll","crocker","eyc-dinner","bingo-fri"], sat:["moody","decordova","encore"], sun:["eyc-sail","derby","eyc-dinner"] },
+ capeann:{ fri:["pem","salem-thrift","bingo-fri"], sat:["moody","charles","encore"], sun:["bearskin","halibut","rockyneck","woodmans"] },
+ ipswich:{ fri:["mhd-stroll","eyc-dinner","bingo-fri"], sat:["moody","waltham-thrift","encore"], sun:["crane","essex-antique","woodmans"] },
+ rainy:{ fri:["pem","cozy-lunch","bingo-fri"], sat:["moody","encore"], sun:["pottery","salem-thrift","willows","bingo-sat"] },
+ staycation:{ fri:["salem-thrift","cozy-lunch","bingo-fri"], sat:["moody","charles","encore"], sun:["willows","derby","candles"] }
+};
+
+/* ── State ─────────────────────────────────────────────── */
+const LISTS = { locker:"locker", fri:"day-fri", sat:"day-sat", sun:"day-sun" };
+let customIdeas = [];
+
+function defaultState(){
+  return { fri:[], sat:[], sun:[], locker:ACTIVITIES.map(a=>a.id), custom:[] };
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem("anniv-chart-v1");
+    if(raw){ return JSON.parse(raw); }
+  }catch(e){ /* storage unavailable — run in-memory */ }
+  return defaultState();
+}
+function saveState(){
+  const state = {
+    fri:idsIn("day-fri"), sat:idsIn("day-sat"), sun:idsIn("day-sun"),
+    locker:idsIn("locker"), custom:customIdeas
+  };
+  try{ localStorage.setItem("anniv-chart-v1", JSON.stringify(state)); }catch(e){}
+}
+function idsIn(elId){
+  return [...document.getElementById(elId).querySelectorAll(".card-item")].map(c=>c.dataset.id);
+}
+function findActivity(id){
+  return ACTIVITIES.find(a=>a.id===id) || customIdeas.find(a=>a.id===id);
+}
+
+/* ── Rendering ─────────────────────────────────────────── */
+const TAG_LABELS = {thrift:"Thrift", games:"Casino & Bingo", crafts:"Crafts", nature:"Nature", sailing:"Sailing", food:"Food"};
+const WEATHER_LABELS = {sun:"Sun", rain:"Rain", either:"Any"};
+
+function cardEl(act){
+  const el = document.createElement("div");
+  el.className = "card-item";
+  el.dataset.id = act.id;
+  el.dataset.weather = act.weather;
+  el.dataset.tags = act.tags.join(",");
+  el.innerHTML = `
+    <div class="card-top">
+      <span class="card-title"></span>
+      <span class="pennant ${act.weather}">${WEATHER_LABELS[act.weather]}</span>
+    </div>
+    <div class="card-place"></div>
+    <div class="card-note"></div>
+    <div class="card-tags">${act.tags.map(t=>`<span class="tag">${TAG_LABELS[t]||t}</span>`).join("")}</div>
+    <button class="card-remove" aria-label="Send back to locker" title="Send back to locker">✕</button>`;
+  el.querySelector(".card-title").textContent = act.title;
+  el.querySelector(".card-place").textContent = act.place || "";
+  el.querySelector(".card-note").textContent = act.note || "";
+  return el;
+}
+
+function render(state){
+  customIdeas = state.custom || [];
+  const fill = (elId, ids)=>{
+    const box = document.getElementById(elId);
+    box.innerHTML = "";
+    ids.forEach(id=>{ const a=findActivity(id); if(a) box.appendChild(cardEl(a)); });
+  };
+  fill("day-fri", state.fri); fill("day-sat", state.sat); fill("day-sun", state.sun);
+  fill("locker", state.locker);
+  applyFilters();
+}
+
+/* ── Drag & drop ───────────────────────────────────────── */
+["locker","day-fri","day-sat","day-sun"].forEach(id=>{
+  new Sortable(document.getElementById(id), {
+    group:"chart", animation:150,
+    ghostClass:"sortable-ghost", dragClass:"sortable-drag",
+    delay:120, delayOnTouchOnly:true,
+    onSort:saveState, onAdd:saveState, onRemove:saveState
+  });
+});
+
+/* Send back to locker */
+document.addEventListener("click", e=>{
+  const btn = e.target.closest(".card-remove");
+  if(!btn) return;
+  const card = btn.closest(".card-item");
+  document.getElementById("locker").prepend(card);
+  saveState(); applyFilters();
+});
+
+/* ── Filters ───────────────────────────────────────────── */
+let activeFilters = new Set();
+document.querySelectorAll(".filter").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const f = btn.dataset.filter;
+    if(activeFilters.has(f)){ activeFilters.delete(f); btn.setAttribute("aria-pressed","false"); }
+    else{ activeFilters.add(f); btn.setAttribute("aria-pressed","true"); }
+    applyFilters();
+  });
+});
+function applyFilters(){
+  const cards = document.querySelectorAll("#locker .card-item");
+  cards.forEach(c=>{
+    if(activeFilters.size===0){ c.style.display=""; return; }
+    const tags = (c.dataset.tags||"").split(",");
+    const weather = c.dataset.weather;
+    const match = [...activeFilters].some(f=>
+      f==="sun" ? (weather==="sun"||weather==="either") :
+      f==="rain" ? (weather==="rain"||weather==="either") :
+      tags.includes(f));
+    c.style.display = match ? "" : "none";
+  });
+}
+
+/* ── Presets ───────────────────────────────────────────── */
+document.querySelectorAll(".preset-chip").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const p = PRESETS[btn.dataset.preset];
+    const used = new Set([...p.fri, ...p.sat, ...p.sun]);
+    const locker = ACTIVITIES.map(a=>a.id).filter(id=>!used.has(id))
+                   .concat(customIdeas.map(a=>a.id));
+    render({fri:[...p.fri], sat:[...p.sat], sun:[...p.sun], locker, custom:customIdeas});
+    saveState();
+    toast(`Loaded "${btn.textContent}" — now make it yours`);
+  });
+});
+
+/* ── Add custom idea ───────────────────────────────────── */
+document.getElementById("addBtn").addEventListener("click", ()=>{
+  const title = document.getElementById("newTitle").value.trim();
+  if(!title){ toast("Give the idea a name first"); return; }
+  const act = {
+    id:"custom-"+Date.now(),
+    title,
+    place:document.getElementById("newPlace").value.trim(),
+    weather:document.getElementById("newWeather").value,
+    tags:[], note:""
+  };
+  customIdeas.push(act);
+  document.getElementById("locker").prepend(cardEl(act));
+  document.getElementById("newTitle").value="";
+  document.getElementById("newPlace").value="";
+  saveState();
+  toast("Added to the locker");
+});
+
+/* ── Copy plan / reset / toast ─────────────────────────── */
+document.getElementById("copyBtn").addEventListener("click", ()=>{
+  let out = "OUR ANNIVERSARY PLAN · Jul 31 – Aug 2, 2026\n";
+  [["day-fri","Friday, July 31"],["day-sat","Saturday, August 1"],["day-sun","Sunday, August 2"]].forEach(([id,label])=>{
+    out += `\n${label}\n`;
+    const ids = idsIn(id);
+    if(ids.length===0){ out += "  (nothing planned yet)\n"; }
+    ids.forEach((cid,i)=>{
+      const a = findActivity(cid);
+      if(a) out += `  ${i+1}. ${a.title}${a.place ? " — "+a.place : ""}\n`;
+    });
+  });
+  navigator.clipboard.writeText(out)
+    .then(()=>toast("Plan copied — paste it anywhere"))
+    .catch(()=>toast("Couldn't copy on this browser"));
+});
+
+document.getElementById("resetBtn").addEventListener("click", ()=>{
+  if(!confirm("Clear the board and return every idea to the locker?")) return;
+  customIdeas = [];
+  render(defaultState());
+  saveState();
+  toast("Fresh chart");
+});
+
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove("show"), 2600);
+}
+
+/* ── Boot ──────────────────────────────────────────────── */
+render(loadState());
+</script>
+</body>
+</html>
