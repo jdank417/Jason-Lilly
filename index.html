@@ -3,40 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>💛 The Anniversary Chart · July 31 – August 2</title>
+<title>The Anniversary Chart · July 31 – August 2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#4A3B6B;
-    --ink-soft:#8577A6;
-    --fog:#FFF8FB;
+    --ink:#3D3A4D;
+    --ink-soft:#8A8599;
+    --bg:#FAF8FB;
     --card:#FFFFFF;
-    --gold:#FFC857;
-    --gold-deep:#F4A93E;
-    --kelp:#6FCF97;
-    --rain:#7EC8FF;
-    --signal:#FF7A93;
-    --line:#F3DFEF;
-    --shadow:0 10px 26px rgba(146,110,180,.18);
-    --radius:22px;
-    --font-display:"Baloo 2",cursive;
-    --font-body:"Quicksand",sans-serif;
-    --font-mono:"Quicksand",sans-serif;
+    --accent:#E58FB0;
+    --accent-soft:#FBE6EF;
+    --sun:#E3A94E;
+    --rain:#7FADD9;
+    --either:#B29FD1;
+    --danger:#E2718A;
+    --line:#ECE7EF;
+    --radius:14px;
+    --shadow:0 2px 10px rgba(61,58,77,.08);
+    --font:"Quicksand",sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
   body{
-    font-family:var(--font-body);
+    font-family:var(--font);
     font-weight:500;
     color:var(--ink);
-    background-color:var(--fog);
-    background-image:
-      radial-gradient(rgba(255,200,87,.4) 1.6px, transparent 1.6px),
-      radial-gradient(rgba(126,200,255,.32) 1.6px, transparent 1.6px);
-    background-size:26px 26px, 26px 26px;
-    background-position:0 0, 13px 13px;
+    background:var(--bg);
     min-height:100vh;
     -webkit-tap-highlight-color:transparent;
   }
@@ -44,29 +38,23 @@
 
   /* ── Header ────────────────────────────────────────────── */
   header{
-    background:linear-gradient(135deg, #6E5A9C, #8577C4 55%, #6FA6D8);
+    background:var(--ink);
     color:#fff;
-    padding:28px 22px 34px;
-    padding-top:calc(28px + env(safe-area-inset-top));
+    padding:22px 22px 24px;
+    padding-top:calc(22px + env(safe-area-inset-top));
     padding-left:calc(22px + env(safe-area-inset-left));
     padding-right:calc(22px + env(safe-area-inset-right));
-    position:relative;
-    overflow:hidden;
-    border-radius:0 0 28px 28px;
-    box-shadow:0 10px 30px rgba(110,90,156,.35);
+    border-bottom:3px solid var(--accent);
   }
-  header::after{
-    content:"✨";
-    position:absolute;
-    top:14px;right:20px;
-    font-size:1.5rem;
-    opacity:.85;
-    transform:rotate(12deg);
-  }
-  .header-inner{max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 24px;position:relative;z-index:1}
-  .eyebrow{font-family:var(--font-mono);font-weight:700;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:#FFE9A8;width:100%}
-  h1{font-family:var(--font-display);font-weight:800;font-size:clamp(1.7rem,5.5vw,2.7rem);line-height:1.1}
-  .dates{font-family:var(--font-mono);font-weight:600;font-size:.88rem;color:#EAE3FA}
+  .header-inner{max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 24px}
+  .eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#C9B7D6;width:100%}
+  h1{font-weight:700;font-size:clamp(1.5rem,4.5vw,2.1rem);line-height:1.2}
+  .dates{font-size:.85rem;font-weight:600;color:#D8D3E0}
+  .sync-badge{font-size:.72rem;font-weight:600;color:#B4AEC2;display:inline-flex;align-items:center;gap:6px;width:100%}
+  .sync-dot{width:7px;height:7px;border-radius:50%;background:#7A7488;display:inline-block;flex-shrink:0}
+  .sync-badge[data-state="connecting"] .sync-dot{background:#E3A94E}
+  .sync-badge[data-state="synced"] .sync-dot{background:#6FBF8B}
+  .sync-badge[data-state="offline"] .sync-dot{background:var(--danger)}
   .header-actions{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap;width:100%}
   @media(min-width:520px){ .header-actions{width:auto} }
   .btn{
@@ -74,40 +62,39 @@
     background:var(--card);
     color:var(--ink);
     border-radius:999px;
-    padding:11px 20px;
+    padding:10px 18px;
     min-height:44px;
     font-size:.85rem;
     font-weight:700;
     flex:1 1 auto;
     text-align:center;
-    transition:transform .15s cubic-bezier(.34,1.56,.64,1), box-shadow .15s ease;
+    transition:background .15s ease, transform .1s ease;
   }
   @media(min-width:520px){ .btn{flex:0 0 auto} }
-  .btn:hover{transform:translateY(-2px) scale(1.03);box-shadow:var(--shadow)}
-  .btn:active{transform:translateY(0) scale(.98)}
-  .btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
-  .btn-dark{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.5)}
-  .btn-gold{background:var(--gold);border-color:var(--gold-deep);color:#4A3010}
+  .btn:hover{transform:translateY(-1px)}
+  .btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .btn-dark{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.35)}
+  .btn-accent{background:var(--accent);border-color:var(--accent);color:#fff}
 
   /* ── Preset bar ────────────────────────────────────────── */
   .preset-bar{
-    max-width:1280px;margin:20px auto 0;padding:0 22px 6px;
+    max-width:1280px;margin:18px auto 0;padding:0 22px 6px;
     display:flex;align-items:center;gap:10px;flex-wrap:wrap;
   }
-  .preset-bar label{font-family:var(--font-mono);font-weight:700;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+  .preset-bar label{font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
   .preset-chip{
-    border:2px solid var(--ink);
+    border:2px solid var(--line);
     background:var(--card);
+    color:var(--ink);
     border-radius:999px;
-    padding:9px 16px;
+    padding:8px 15px;
     min-height:40px;
     font-size:.82rem;
     font-weight:700;
-    position:relative;
-    transition:transform .15s cubic-bezier(.34,1.56,.64,1), background .15s ease, color .15s ease;
+    transition:background .15s ease, border-color .15s ease;
   }
-  .preset-chip:hover{background:var(--ink);color:#fff;transform:translateY(-2px) rotate(-1deg)}
-  .preset-chip:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+  .preset-chip:hover{background:var(--accent-soft);border-color:var(--accent)}
+  .preset-chip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 
   /* ── Layout ────────────────────────────────────────────── */
   .layout{
@@ -121,7 +108,7 @@
   /* ── Idea locker ───────────────────────────────────────── */
   .locker{
     background:var(--card);
-    border:2.5px solid var(--line);
+    border:1.5px solid var(--line);
     border-radius:var(--radius);
     box-shadow:var(--shadow);
     position:sticky;top:14px;
@@ -130,26 +117,22 @@
     overflow:hidden;
   }
   @media(max-width:900px){.locker{position:static;max-height:none}}
-  .locker-head{
-    padding:16px 18px 10px;
-    border-bottom:2px dashed var(--line);
-  }
-  .locker-head h2{font-family:var(--font-display);font-size:1.15rem;font-weight:700;color:var(--ink)}
+  .locker-head{padding:16px 18px 10px;border-bottom:1.5px solid var(--line)}
+  .locker-head h2{font-size:1.1rem;font-weight:700}
   .locker-head p{font-size:.78rem;color:var(--ink-soft);margin-top:3px;font-weight:600}
-  .filters{display:flex;flex-wrap:wrap;gap:7px;padding:12px 16px;border-bottom:2px dashed var(--line)}
+  .filters{display:flex;flex-wrap:wrap;gap:7px;padding:12px 16px;border-bottom:1.5px solid var(--line)}
   .filter{
-    border:2px solid var(--line);
-    background:var(--fog);
+    border:1.5px solid var(--line);
+    background:var(--bg);
     border-radius:999px;
     padding:6px 12px;
     min-height:34px;
     font-size:.74rem;
     font-weight:700;
     color:var(--ink-soft);
-    transition:transform .12s ease;
   }
-  .filter[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff;transform:scale(1.04)}
-  .filter:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
+  .filter[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .filter:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
   .locker-list{padding:14px;overflow-y:auto;flex:1;min-height:120px}
   @media(max-width:900px){.locker-list{max-height:min(46vh,380px)}}
   .locker-empty{font-size:.82rem;color:var(--ink-soft);padding:12px;text-align:center;font-weight:600}
@@ -159,116 +142,115 @@
   @media(max-width:1100px){.days{grid-template-columns:1fr}}
   .day{
     background:var(--card);
-    border:2.5px solid var(--line);
+    border:1.5px solid var(--line);
     border-radius:var(--radius);
     box-shadow:var(--shadow);
     display:flex;flex-direction:column;
     overflow:hidden;
   }
-  .day-head{
-    background:linear-gradient(120deg, var(--ink), #6E5A9C);
-    color:#fff;
-    padding:14px 16px 24px;
-    position:relative;
-  }
-  .day-head::after{ /* scalloped bunting edge */
-    content:"";
-    position:absolute;left:0;right:0;bottom:-1px;height:14px;
-    background-image:radial-gradient(circle at 10px 0, transparent 9px, var(--card) 10px);
-    background-size:20px 14px;
-    background-repeat:repeat-x;
-  }
-  .day-sticker{
-    position:absolute;top:10px;right:14px;
-    font-size:1.5rem;
-    transform:rotate(10deg);
-    filter:drop-shadow(0 2px 2px rgba(0,0,0,.2));
-  }
-  .day-num{font-family:var(--font-mono);font-weight:700;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#FFE9A8}
-  .day-head h3{font-family:var(--font-display);font-size:1.25rem;font-weight:700;line-height:1.2}
-  .day-note{font-size:.76rem;color:#EAE3FA;margin-top:3px;font-weight:600}
+  .day-head{background:var(--ink);color:#fff;padding:14px 16px}
+  .day-num{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#C9B7D6}
+  .day-head h3{font-size:1.15rem;font-weight:700;line-height:1.2}
+  .day-note{font-size:.76rem;color:#D8D3E0;margin-top:3px;font-weight:600}
   .day-list{padding:14px;flex:1;min-height:160px}
-  .day-list.drag-over{background:#FFF2D6}
+  .day-list.drag-over{background:var(--accent-soft)}
 
   /* ── Cards ─────────────────────────────────────────────── */
   .card-item{
-    background:var(--fog);
-    border:2px solid var(--line);
-    border-radius:16px;
-    padding:11px 13px 12px 16px;
-    margin-bottom:11px;
+    background:var(--card);
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    padding:11px 12px 11px 14px;
+    margin-bottom:10px;
     position:relative;
     cursor:grab;
     touch-action:none;
-    transition:transform .15s ease, box-shadow .15s ease;
+    transition:box-shadow .12s ease;
   }
-  .card-item:hover{transform:translateY(-2px) rotate(-.6deg);box-shadow:var(--shadow)}
+  .card-item:hover{box-shadow:var(--shadow)}
   .card-item:active{cursor:grabbing}
-  .card-item::before{ /* candy-stripe edge */
-    content:"";position:absolute;left:0;top:0;bottom:0;width:5px;
-    border-radius:16px 0 0 16px;background:var(--gold);
+  .card-item::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
+    border-radius:12px 0 0 12px;background:var(--either);
   }
-  .card-item[data-weather="sun"]::before{background:var(--kelp)}
+  .card-item[data-weather="sun"]::before{background:var(--sun)}
   .card-item[data-weather="rain"]::before{background:var(--rain)}
+  .card-item.is-fav{border-color:var(--accent)}
   .sortable-ghost{opacity:.35}
-  .sortable-drag{box-shadow:0 12px 28px rgba(74,59,107,.3)!important;transform:rotate(2deg)!important}
-  .card-top{display:flex;align-items:flex-start;gap:8px}
-  .card-title{font-weight:700;font-size:.9rem;line-height:1.3;flex:1}
-  .pennant{ /* whimsical weather pill */
+  .sortable-drag{box-shadow:0 8px 20px rgba(61,58,77,.25)!important}
+  .card-top{display:flex;align-items:flex-start;flex-wrap:wrap;gap:6px 8px}
+  .card-title{font-weight:700;font-size:.9rem;line-height:1.3;flex:1;min-width:120px}
+  .card-controls{display:flex;align-items:center;gap:4px;flex-shrink:0;margin-left:auto}
+  .pennant{
     flex-shrink:0;
-    font-family:var(--font-mono);
     font-size:.66rem;
     font-weight:700;
-    letter-spacing:.02em;
     color:#fff;
     padding:4px 10px;
     border-radius:999px;
     white-space:nowrap;
   }
-  .pennant.sun{background:var(--kelp)}
+  .pennant.sun{background:var(--sun)}
   .pennant.rain{background:var(--rain)}
-  .pennant.either{background:var(--gold-deep)}
-  .card-place{font-family:var(--font-mono);font-weight:600;font-size:.7rem;color:var(--ink-soft);margin-top:3px}
-  .card-note{font-size:.78rem;color:var(--ink-soft);margin-top:6px;line-height:1.45;font-weight:500}
-  .card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
-  .tag{font-size:.66rem;font-weight:700;color:var(--ink);background:#F0E4FA;border-radius:999px;padding:3px 9px}
-  .card-remove{
-    position:absolute;top:6px;right:6px;
-    display:none;
-    align-items:center;justify-content:center;
-    min-width:30px;min-height:30px;
-    border:none;background:transparent;color:var(--signal);
-    font-size:1rem;line-height:1;
-    border-radius:999px;
+  .pennant.either{background:var(--either)}
+  .icon-btn{
+    width:28px;height:28px;
+    display:inline-flex;align-items:center;justify-content:center;
+    border:none;background:transparent;color:var(--ink-soft);
+    font-size:.95rem;line-height:1;border-radius:999px;
   }
-  .day-list .card-remove{display:flex}
-  .card-remove:hover{background:#FFE1E7}
-  .card-remove:focus-visible{outline:2px solid var(--signal)}
-  .day-list .pennant{margin-right:24px}
+  .icon-btn:hover{background:var(--bg)}
+  .icon-btn:focus-visible{outline:2px solid var(--accent)}
+  .card-fav[aria-pressed="true"]{color:var(--accent)}
+  .card-remove{display:none;color:var(--danger)}
+  .day-list .card-remove{display:inline-flex}
+  .card-remove:hover{background:#FBE3E9}
+  .card-meta{font-weight:600;font-size:.7rem;color:var(--ink-soft);margin-top:3px}
+  .card-note{font-size:.78rem;color:var(--ink-soft);margin-top:5px;line-height:1.45;font-weight:500}
+  .card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+  .tag{font-size:.66rem;font-weight:700;color:var(--ink-soft);background:var(--bg);border-radius:999px;padding:3px 9px}
+
+  .card-edit{display:none;flex-direction:column;gap:7px;margin-top:10px;padding-top:10px;border-top:1.5px dashed var(--line)}
+  .card-item.editing .card-edit{display:flex}
+  .card-edit input,.card-edit textarea{
+    width:100%;padding:9px 10px;
+    border:1.5px solid var(--line);border-radius:10px;
+    font-family:inherit;font-size:16px;font-weight:600;background:var(--bg);color:var(--ink);
+  }
+  .card-edit textarea{font-weight:500;resize:vertical;min-height:52px}
+  .card-edit input:focus-visible,.card-edit textarea:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+  .edit-row{display:flex;gap:7px}
+  .edit-row input{width:auto;flex:1}
+  .edit-actions{display:flex;gap:8px}
+  .btn-small{
+    border:none;border-radius:999px;padding:8px 14px;min-height:36px;
+    font-size:.78rem;font-weight:700;background:var(--ink);color:#fff;flex:1;
+  }
+  .btn-small.ghost{background:transparent;color:var(--ink-soft);border:1.5px solid var(--line)}
 
   /* ── Add idea + footer ─────────────────────────────────── */
-  .add-idea{padding:14px 18px;border-top:2px dashed var(--line)}
+  .add-idea{padding:14px 18px;border-top:1.5px solid var(--line)}
   .add-idea summary{font-size:.82rem;font-weight:700;cursor:pointer;color:var(--ink-soft)}
   .add-idea input,.add-idea select{
     width:100%;margin-top:9px;padding:11px 12px;
-    border:2px solid var(--line);border-radius:12px;
-    font-family:inherit;font-size:16px;font-weight:600;background:var(--fog);color:var(--ink);
+    border:1.5px solid var(--line);border-radius:10px;
+    font-family:inherit;font-size:16px;font-weight:600;background:var(--bg);color:var(--ink);
   }
-  .add-idea input:focus-visible,.add-idea select:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
+  .add-idea input:focus-visible,.add-idea select:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
   .add-idea button{margin-top:10px;width:100%}
   footer{
     max-width:1280px;margin:0 auto 40px;padding:0 22px;
     padding-left:calc(22px + env(safe-area-inset-left));
     padding-right:calc(22px + env(safe-area-inset-right));
-    font-family:var(--font-mono);font-weight:600;font-size:.74rem;color:var(--ink-soft);
+    font-size:.74rem;font-weight:600;color:var(--ink-soft);
     text-align:center;
   }
   .toast{
     position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);
     background:var(--ink);color:#fff;
-    padding:12px 20px;border-radius:999px;font-size:.85rem;font-weight:700;
+    padding:11px 18px;border-radius:999px;font-size:.85rem;font-weight:700;
     max-width:calc(100% - 32px);text-align:center;
-    box-shadow:var(--shadow);transition:transform .25s cubic-bezier(.34,1.56,.64,1);z-index:50;
+    box-shadow:var(--shadow);transition:transform .2s ease;z-index:50;
   }
   .toast.show{transform:translateX(-50%) translateY(0)}
   @media(prefers-reduced-motion:reduce){
@@ -277,13 +259,11 @@
 
   /* ── Small screens ─────────────────────────────────────── */
   @media(max-width:640px){
-    header{padding-top:calc(22px + env(safe-area-inset-top));padding-bottom:26px;border-radius:0 0 20px 20px}
     .header-actions .btn{min-width:0}
     .preset-bar{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;padding-bottom:10px}
     .preset-bar label{width:auto;white-space:nowrap;flex-shrink:0}
     .preset-chip{flex-shrink:0;scroll-snap-align:start}
     .layout{margin-top:16px}
-    .day-head h3{font-size:1.1rem}
   }
   @media(max-width:400px){
     .layout,.preset-bar,footer{padding-left:14px;padding-right:14px}
@@ -295,45 +275,47 @@
 
 <header>
   <div class="header-inner">
-    <span class="eyebrow">One year, charted together 💕</span>
-    <h1>⛵ The Anniversary Chart</h1>
+    <span class="eyebrow">One year, charted together</span>
+    <h1>The Anniversary Chart</h1>
     <span class="dates">FRI JUL 31 — SUN AUG 2, 2026 · Salem, MA home port</span>
+    <span class="sync-badge" id="syncBadge" data-state="local"><span class="sync-dot"></span><span id="syncText">Local only</span></span>
     <div class="header-actions">
-      <button class="btn btn-gold" id="copyBtn">📋 Copy plan as text</button>
-      <button class="btn btn-dark" id="resetBtn">🔄 Reset board</button>
+      <button class="btn btn-accent" id="copyBtn">Copy plan as text</button>
+      <button class="btn btn-dark" id="resetBtn">Reset board</button>
     </div>
   </div>
 </header>
 
 <div class="preset-bar">
   <label>Load a starter plan:</label>
-  <button class="preset-chip" data-preset="harbor">⚓ Harbor Classic</button>
-  <button class="preset-chip" data-preset="capeann">🌊 Cape Ann Loop</button>
-  <button class="preset-chip" data-preset="ipswich">🦞 Ipswich &amp; Essex</button>
-  <button class="preset-chip" data-preset="rainy">☔ Rainy-Day Rescue</button>
-  <button class="preset-chip" data-preset="staycation">🏠 Salem Staycation</button>
+  <button class="preset-chip" data-preset="harbor">Harbor Classic</button>
+  <button class="preset-chip" data-preset="capeann">Cape Ann Loop</button>
+  <button class="preset-chip" data-preset="ipswich">Ipswich &amp; Essex</button>
+  <button class="preset-chip" data-preset="rainy">Rainy-Day Rescue</button>
+  <button class="preset-chip" data-preset="staycation">Salem Staycation</button>
 </div>
 
 <main class="layout">
 
   <aside class="locker" aria-label="Idea locker">
     <div class="locker-head">
-      <h2>💌 Idea Locker</h2>
+      <h2>Idea Locker</h2>
       <p>Drag ideas onto a day. Colored edge = best weather.</p>
     </div>
     <div class="filters" role="group" aria-label="Filter ideas">
-      <button class="filter" data-filter="sun" aria-pressed="false">☀️ Sun</button>
-      <button class="filter" data-filter="rain" aria-pressed="false">🌧️ Rain</button>
-      <button class="filter" data-filter="thrift" aria-pressed="false">🛍️ Thrift</button>
-      <button class="filter" data-filter="games" aria-pressed="false">🎰 Casino &amp; Bingo</button>
-      <button class="filter" data-filter="crafts" aria-pressed="false">🎨 Crafts</button>
-      <button class="filter" data-filter="nature" aria-pressed="false">🌿 Nature</button>
-      <button class="filter" data-filter="sailing" aria-pressed="false">⛵ Sailing</button>
-      <button class="filter" data-filter="food" aria-pressed="false">🍦 Food</button>
+      <button class="filter" data-filter="favorite" aria-pressed="false">★ Favorites</button>
+      <button class="filter" data-filter="sun" aria-pressed="false">☀ Sun</button>
+      <button class="filter" data-filter="rain" aria-pressed="false">☂ Rain</button>
+      <button class="filter" data-filter="thrift" aria-pressed="false">Thrift</button>
+      <button class="filter" data-filter="games" aria-pressed="false">Casino &amp; Bingo</button>
+      <button class="filter" data-filter="crafts" aria-pressed="false">Crafts</button>
+      <button class="filter" data-filter="nature" aria-pressed="false">Nature</button>
+      <button class="filter" data-filter="sailing" aria-pressed="false">Sailing</button>
+      <button class="filter" data-filter="food" aria-pressed="false">Food</button>
     </div>
     <div class="locker-list" id="locker"></div>
     <details class="add-idea">
-      <summary>✨ Add your own idea</summary>
+      <summary>+ Add your own idea</summary>
       <input type="text" id="newTitle" placeholder="Idea (e.g. Mini golf rematch)" maxlength="60">
       <input type="text" id="newPlace" placeholder="Place (optional)" maxlength="60">
       <select id="newWeather">
@@ -341,14 +323,13 @@
         <option value="sun">Good weather</option>
         <option value="rain">Bad weather</option>
       </select>
-      <button class="btn" id="addBtn">Add to locker 💛</button>
+      <button class="btn" id="addBtn">Add to locker</button>
     </details>
   </aside>
 
   <section class="days" aria-label="Weekend days">
     <div class="day">
       <div class="day-head">
-        <span class="day-sticker">🌙</span>
         <span class="day-num">Day 01 · Friday</span>
         <h3>July 31</h3>
         <p class="day-note">Easy-pace day — keep it gentle</p>
@@ -357,7 +338,6 @@
     </div>
     <div class="day">
       <div class="day-head">
-        <span class="day-sticker">📦</span>
         <span class="day-num">Day 02 · Saturday</span>
         <h3>August 1</h3>
         <p class="day-note">Waltham move day — plan around the boxes</p>
@@ -366,7 +346,6 @@
     </div>
     <div class="day">
       <div class="day-head">
-        <span class="day-sticker">💖</span>
         <span class="day-num">Day 03 · Sunday</span>
         <h3>August 2</h3>
         <p class="day-note">The main event</p>
@@ -378,13 +357,30 @@
 </main>
 
 <footer>
-  💡 BOARD SAVES AUTOMATICALLY IN THIS BROWSER · BINGO &amp; WORKSHOP TIMES CHANGE — CALL AHEAD
+  BOARD SAVES AUTOMATICALLY · BINGO &amp; WORKSHOP TIMES CHANGE — CALL AHEAD
 </footer>
 
 <div class="toast" id="toast" role="status"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script>
+/* ── Live sync (optional) ─────────────────────────────────────
+   Leave FIREBASE_CONFIG empty and everything works locally, saved
+   only to this browser. To make the board update live between two
+   people: create a free project at console.firebase.google.com,
+   add a Realtime Database (test mode is fine), add a Web app, and
+   paste the config object it gives you in below. See README.md for
+   the full walkthrough.                                          */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBuFJ9sOSmgIBrXV8xpXE_GdRoZPWGcNaw",
+  authDomain: "jason-lilly.firebaseapp.com",
+  databaseURL: "https://jason-lilly-default-rtdb.firebaseio.com",
+  projectId: "jason-lilly"
+};
+const BOARD_PATH = "boards/anniversary-2026";
+
 /* ── Activity data ─────────────────────────────────────────
    weather: sun | rain | either
    tags: thrift, games, crafts, nature, sailing, food        */
@@ -430,11 +426,12 @@ const PRESETS = {
 };
 
 /* ── State ─────────────────────────────────────────────── */
-const LISTS = { locker:"locker", fri:"day-fri", sat:"day-sat", sun:"day-sun" };
 let customIdeas = [];
+let favorites = new Set();
+let overrides = {};
 
 function defaultState(){
-  return { fri:[], sat:[], sun:[], locker:ACTIVITIES.map(a=>a.id), custom:[] };
+  return { fri:[], sat:[], sun:[], locker:ACTIVITIES.map(a=>a.id), custom:[], favorites:[], overrides:{} };
 }
 function loadState(){
   try{
@@ -443,51 +440,103 @@ function loadState(){
   }catch(e){ /* storage unavailable — run in-memory */ }
   return defaultState();
 }
-function saveState(){
-  const state = {
+function currentState(){
+  return {
     fri:idsIn("day-fri"), sat:idsIn("day-sat"), sun:idsIn("day-sun"),
-    locker:idsIn("locker"), custom:customIdeas
+    locker:idsIn("locker"), custom:customIdeas,
+    favorites:[...favorites], overrides
   };
+}
+let pushTimer;
+function saveState(){
+  const state = currentState();
   try{ localStorage.setItem("anniv-chart-v1", JSON.stringify(state)); }catch(e){}
+  if(fbRef && !applyingRemote){
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(()=>{
+      fbRef.set(state).catch(()=>setSyncStatus("offline"));
+    }, 300);
+  }
 }
 function idsIn(elId){
   return [...document.getElementById(elId).querySelectorAll(".card-item")].map(c=>c.dataset.id);
 }
-function findActivity(id){
+function baseActivity(id){
   return ACTIVITIES.find(a=>a.id===id) || customIdeas.find(a=>a.id===id);
+}
+function getActivity(id){
+  const base = baseActivity(id);
+  if(!base) return null;
+  const ov = overrides[id];
+  return ov ? {...base, ...ov} : base;
 }
 
 /* ── Rendering ─────────────────────────────────────────── */
-const TAG_LABELS = {thrift:"🛍️ Thrift", games:"🎰 Casino & Bingo", crafts:"🎨 Crafts", nature:"🌿 Nature", sailing:"⛵ Sailing", food:"🍦 Food"};
-const WEATHER_LABELS = {sun:"☀️ Sun", rain:"🌧️ Rain", either:"🌈 Any"};
+const TAG_LABELS = {thrift:"Thrift", games:"Casino & Bingo", crafts:"Crafts", nature:"Nature", sailing:"Sailing", food:"Food"};
+const WEATHER_LABELS = {sun:"Sun", rain:"Rain", either:"Any"};
+
+function populateCard(el, act){
+  el.dataset.weather = act.weather;
+  el.dataset.tags = (act.tags||[]).join(",");
+  el.querySelector(".card-title").textContent = act.title;
+  const pennant = el.querySelector(".pennant");
+  pennant.className = `pennant ${act.weather}`;
+  pennant.textContent = WEATHER_LABELS[act.weather];
+  el.querySelector(".card-meta").textContent = [act.time, act.place].filter(Boolean).join(" · ");
+  el.querySelector(".card-note").textContent = act.note || "";
+  el.querySelector(".card-tags").innerHTML = (act.tags||[]).map(t=>`<span class="tag">${TAG_LABELS[t]||t}</span>`).join("");
+  syncFavIcon(el);
+}
 
 function cardEl(act){
   const el = document.createElement("div");
   el.className = "card-item";
   el.dataset.id = act.id;
-  el.dataset.weather = act.weather;
-  el.dataset.tags = act.tags.join(",");
   el.innerHTML = `
     <div class="card-top">
       <span class="card-title"></span>
-      <span class="pennant ${act.weather}">${WEATHER_LABELS[act.weather]}</span>
+      <div class="card-controls">
+        <span class="pennant"></span>
+        <button class="icon-btn card-fav" aria-label="Favorite" aria-pressed="false" title="Favorite">☆</button>
+        <button class="icon-btn card-edit-toggle" aria-label="Edit" title="Edit">✎</button>
+        <button class="icon-btn card-remove" aria-label="Send back to locker" title="Send back to locker">✕</button>
+      </div>
     </div>
-    <div class="card-place"></div>
+    <div class="card-meta"></div>
     <div class="card-note"></div>
-    <div class="card-tags">${act.tags.map(t=>`<span class="tag">${TAG_LABELS[t]||t}</span>`).join("")}</div>
-    <button class="card-remove" aria-label="Send back to locker" title="Send back to locker">✕</button>`;
-  el.querySelector(".card-title").textContent = act.title;
-  el.querySelector(".card-place").textContent = act.place || "";
-  el.querySelector(".card-note").textContent = act.note || "";
+    <div class="card-tags"></div>
+    <div class="card-edit">
+      <input type="text" class="edit-title" maxlength="70" placeholder="Idea name">
+      <div class="edit-row">
+        <input type="text" class="edit-place" maxlength="60" placeholder="Place">
+        <input type="text" class="edit-time" maxlength="20" placeholder="Time">
+      </div>
+      <textarea class="edit-note" maxlength="200" placeholder="Note"></textarea>
+      <div class="edit-actions">
+        <button class="btn-small card-save">Save</button>
+        <button class="btn-small ghost card-cancel">Cancel</button>
+      </div>
+    </div>`;
+  populateCard(el, act);
   return el;
+}
+
+function syncFavIcon(el){
+  const btn = el.querySelector(".card-fav");
+  const isFav = favorites.has(el.dataset.id);
+  btn.textContent = isFav ? "★" : "☆";
+  btn.setAttribute("aria-pressed", isFav ? "true" : "false");
+  el.classList.toggle("is-fav", isFav);
 }
 
 function render(state){
   customIdeas = state.custom || [];
+  favorites = new Set(state.favorites || []);
+  overrides = state.overrides || {};
   const fill = (elId, ids)=>{
     const box = document.getElementById(elId);
     box.innerHTML = "";
-    ids.forEach(id=>{ const a=findActivity(id); if(a) box.appendChild(cardEl(a)); });
+    ids.forEach(id=>{ const a=getActivity(id); if(a) box.appendChild(cardEl(a)); });
   };
   fill("day-fri", state.fri); fill("day-sat", state.sat); fill("day-sun", state.sun);
   fill("locker", state.locker);
@@ -504,13 +553,57 @@ function render(state){
   });
 });
 
-/* Send back to locker */
+/* ── Card actions: favorite / edit / save / cancel / remove ─ */
 document.addEventListener("click", e=>{
-  const btn = e.target.closest(".card-remove");
-  if(!btn) return;
-  const card = btn.closest(".card-item");
-  document.getElementById("locker").prepend(card);
-  saveState(); applyFilters();
+  const favBtn = e.target.closest(".card-fav");
+  if(favBtn){
+    const card = favBtn.closest(".card-item");
+    const id = card.dataset.id;
+    favorites.has(id) ? favorites.delete(id) : favorites.add(id);
+    syncFavIcon(card);
+    saveState();
+    return;
+  }
+  const editBtn = e.target.closest(".card-edit-toggle");
+  if(editBtn){
+    const card = editBtn.closest(".card-item");
+    const opening = !card.classList.contains("editing");
+    if(opening){
+      const act = getActivity(card.dataset.id);
+      card.querySelector(".edit-title").value = act.title;
+      card.querySelector(".edit-place").value = act.place || "";
+      card.querySelector(".edit-time").value = act.time || "";
+      card.querySelector(".edit-note").value = act.note || "";
+    }
+    card.classList.toggle("editing", opening);
+    return;
+  }
+  const cancelBtn = e.target.closest(".card-cancel");
+  if(cancelBtn){ cancelBtn.closest(".card-item").classList.remove("editing"); return; }
+  const saveBtn = e.target.closest(".card-save");
+  if(saveBtn){
+    const card = saveBtn.closest(".card-item");
+    const id = card.dataset.id;
+    const title = card.querySelector(".edit-title").value.trim();
+    if(!title){ toast("Give it a name first"); return; }
+    overrides[id] = {
+      title,
+      place: card.querySelector(".edit-place").value.trim(),
+      time: card.querySelector(".edit-time").value.trim(),
+      note: card.querySelector(".edit-note").value.trim()
+    };
+    populateCard(card, getActivity(id));
+    card.classList.remove("editing");
+    saveState();
+    toast("Saved");
+    return;
+  }
+  const removeBtn = e.target.closest(".card-remove");
+  if(removeBtn){
+    document.getElementById("locker").prepend(removeBtn.closest(".card-item"));
+    saveState(); applyFilters();
+    return;
+  }
 });
 
 /* ── Filters ───────────────────────────────────────────── */
@@ -529,9 +622,11 @@ function applyFilters(){
     if(activeFilters.size===0){ c.style.display=""; return; }
     const tags = (c.dataset.tags||"").split(",");
     const weather = c.dataset.weather;
+    const isFav = c.classList.contains("is-fav");
     const match = [...activeFilters].some(f=>
       f==="sun" ? (weather==="sun"||weather==="either") :
       f==="rain" ? (weather==="rain"||weather==="either") :
+      f==="favorite" ? isFav :
       tags.includes(f));
     c.style.display = match ? "" : "none";
   });
@@ -544,16 +639,16 @@ document.querySelectorAll(".preset-chip").forEach(btn=>{
     const used = new Set([...p.fri, ...p.sat, ...p.sun]);
     const locker = ACTIVITIES.map(a=>a.id).filter(id=>!used.has(id))
                    .concat(customIdeas.map(a=>a.id));
-    render({fri:[...p.fri], sat:[...p.sat], sun:[...p.sun], locker, custom:customIdeas});
+    render({fri:[...p.fri], sat:[...p.sat], sun:[...p.sun], locker, custom:customIdeas, favorites:[...favorites], overrides});
     saveState();
-    toast(`Loaded "${btn.textContent.trim()}" — now make it yours ✨`);
+    toast(`Loaded "${btn.textContent.trim()}" — now make it yours`);
   });
 });
 
 /* ── Add custom idea ───────────────────────────────────── */
 document.getElementById("addBtn").addEventListener("click", ()=>{
   const title = document.getElementById("newTitle").value.trim();
-  if(!title){ toast("Give the idea a name first 💭"); return; }
+  if(!title){ toast("Give the idea a name first"); return; }
   const act = {
     id:"custom-"+Date.now(),
     title,
@@ -566,7 +661,7 @@ document.getElementById("addBtn").addEventListener("click", ()=>{
   document.getElementById("newTitle").value="";
   document.getElementById("newPlace").value="";
   saveState();
-  toast("Added to the locker 💛");
+  toast("Added to the locker");
 });
 
 /* ── Copy plan / reset / toast ─────────────────────────── */
@@ -577,21 +672,21 @@ document.getElementById("copyBtn").addEventListener("click", ()=>{
     const ids = idsIn(id);
     if(ids.length===0){ out += "  (nothing planned yet)\n"; }
     ids.forEach((cid,i)=>{
-      const a = findActivity(cid);
-      if(a) out += `  ${i+1}. ${a.title}${a.place ? " — "+a.place : ""}\n`;
+      const a = getActivity(cid);
+      if(a) out += `  ${i+1}. ${a.title}${a.time ? " @ "+a.time : ""}${a.place ? " — "+a.place : ""}\n`;
     });
   });
   navigator.clipboard.writeText(out)
-    .then(()=>toast("Plan copied — paste it anywhere 📋"))
+    .then(()=>toast("Plan copied — paste it anywhere"))
     .catch(()=>toast("Couldn't copy on this browser"));
 });
 
 document.getElementById("resetBtn").addEventListener("click", ()=>{
-  if(!confirm("Clear the board and return every idea to the locker?")) return;
+  if(!confirm("Clear the board and return every idea to the locker? (Favorites and notes stay.)")) return;
   customIdeas = [];
-  render(defaultState());
+  render({ fri:[], sat:[], sun:[], locker:ACTIVITIES.map(a=>a.id), custom:[], favorites:[...favorites], overrides });
   saveState();
-  toast("Fresh chart ✨");
+  toast("Fresh chart");
 });
 
 let toastTimer;
@@ -603,8 +698,42 @@ function toast(msg){
   toastTimer = setTimeout(()=>t.classList.remove("show"), 2600);
 }
 
+/* ── Live sync ─────────────────────────────────────────── */
+let fbRef = null;
+let applyingRemote = false;
+function setSyncStatus(state, text){
+  const badge = document.getElementById("syncBadge");
+  badge.dataset.state = state;
+  document.getElementById("syncText").textContent = text || (
+    { local:"Local only", connecting:"Connecting…", synced:"Synced live", offline:"Offline — saving locally" }[state]
+  );
+}
+if(FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.databaseURL && window.firebase){
+  try{
+    firebase.initializeApp(FIREBASE_CONFIG);
+    fbRef = firebase.database().ref(BOARD_PATH);
+  }catch(e){ console.warn("Firebase init failed", e); }
+}
+
 /* ── Boot ──────────────────────────────────────────────── */
-render(loadState());
+const initial = loadState();
+render(initial);
+
+if(fbRef){
+  setSyncStatus("connecting");
+  fbRef.on("value", snap => {
+    const remote = snap.val();
+    if(remote){
+      applyingRemote = true;
+      render(remote);
+      try{ localStorage.setItem("anniv-chart-v1", JSON.stringify(remote)); }catch(e){}
+      applyingRemote = false;
+    } else {
+      fbRef.set(currentState());
+    }
+    setSyncStatus("synced");
+  }, () => setSyncStatus("offline"));
+}
 </script>
 </body>
 </html>
