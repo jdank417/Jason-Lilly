@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>The Anniversary Chart · July 31 – August 2</title>
+<title>Jason &amp; Lilly · Anniversary Chart · July 31 – August 2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -281,7 +281,7 @@
 <header>
   <div class="header-inner">
     <span class="eyebrow">One year, charted together</span>
-    <h1>The Anniversary Chart</h1>
+    <h1>Jason &amp; Lilly's Anniversary Chart</h1>
     <span class="dates">FRI JUL 31 — SUN AUG 2, 2026 · Salem, MA home port</span>
     <span class="sync-badge" id="syncBadge" data-state="local"><span class="sync-dot"></span><span id="syncText">Local only</span></span>
     <div class="header-actions">
@@ -396,7 +396,7 @@ const SCHEMA = 4;
    weather: sun | rain | either
    tags: thrift, games, crafts, nature, sailing, food        */
 const ACTIVITIES = [
- {id:"mhd-stroll", title:"Marblehead Old Town stroll", place:"Marblehead", weather:"sun", tags:["nature"], note:"Winding lanes, harbor views, gallery windows."},
+ {id:"mhd-stroll", title:"Marblehead Old Town stroll", place:"Marblehead", weather:"sun", tags:["nature"], note:"Winding lanes, harbor views, gallery windows.", website:"https://www.visitmarbleheadma.com/"},
  {id:"crocker", title:"Crocker Park & Fort Sewall overlook", place:"Marblehead", weather:"sun", tags:["nature"], note:"Best free harbor seats on the North Shore."},
  {id:"eyc-dinner", title:"Drinks or dinner at Eastern Yacht Club", place:"Marblehead", weather:"either", tags:["food","sailing"], note:"Porch if it's nice, dining room if it's not.", phone:"(781) 631-1400", website:"https://www.easternyc.org/"},
  {id:"eyc-sail", title:"Harbor sail out of EYC", place:"Marblehead", weather:"sun", tags:["sailing","nature"], note:"Doctor-permitting — keep it a calm cruise.", phone:"(781) 631-1400", website:"https://www.easternyc.org/"},
@@ -443,7 +443,13 @@ const ACTIVITIES = [
  {id:"stained-hourglass", title:"Stained Hourglass Escapes", place:"Salem", weather:"rain", tags:["games"], note:"One-hour puzzle escape room downtown — book ahead.", phone:"(978) 607-4273", website:"https://www.stainedhourglass.com/"},
  {id:"firehouse", title:"Show at Firehouse Center for the Arts", place:"1 Market Sq, Newburyport", weather:"rain", tags:["crafts"], note:"Live theater, concerts, or comedy in a historic waterfront firehouse. Advance tickets recommended.", cost:"~$20–$60/ticket", phone:"(978) 462-7336", website:"https://firehouse.org/"},
  {id:"harbortours", title:"Sunset cruise with Yankee Clipper", place:"Waterfront Promenade Park, Newburyport", weather:"sun", tags:["sailing"], note:"90-minute narrated cruise through the harbor and Merrimack River at sunset. Seasonal, ticketed — check the website for current schedule and pricing.", phone:"(603) 682-2293", website:"https://www.harbortours.com/"},
- {id:"waterfrontpark", title:"Waterfront Park & Merrimack River boardwalk", place:"4 Water St, Newburyport", weather:"sun", tags:["nature"], note:"1,100-foot riverside boardwalk with benches, a lawn, and six public access points — walking distance from downtown shops.", cost:"Free", website:"https://newburyportwaterfronttrust.org/"}
+ {id:"waterfrontpark", title:"Waterfront Park & Merrimack River boardwalk", place:"4 Water St, Newburyport", weather:"sun", tags:["nature"], note:"1,100-foot riverside boardwalk with benches, a lawn, and six public access points — walking distance from downtown shops.", cost:"Free", website:"https://newburyportwaterfronttrust.org/"},
+ {id:"marbleheadarts", title:"Marblehead Arts Association galleries", place:"8 Hooper St, Marblehead", weather:"rain", tags:["crafts"], note:"Local artwork and rotating exhibits in a historic house — a nice quiet rainy-day stop.", cost:"Free", phone:"(781) 631-2608", website:"https://www.marbleheadarts.org/"},
+ {id:"satori", title:"Private sail with Satori Sailing", place:"Marblehead", weather:"sun", tags:["sailing"], note:"Public charters and lessons on Salem Sound — a booked option that doesn't need a club connection. Cost varies by charter/lesson length.", phone:"(781) 797-0433", website:"https://www.sailsatori.com/"},
+ {id:"chandlerhovey", title:"Chandler Hovey Park & Marblehead Light", place:"Marblehead Neck", weather:"sun", tags:["nature"], note:"Rocky shoreline park at the harbor mouth, with the cast-iron lighthouse tower — a favorite sunset spot.", cost:"Free", phone:"(781) 631-0236", website:"https://www.marblehead.org/"},
+ {id:"leemansion", title:"Tour the Jeremiah Lee Mansion", place:"161 Washington St, Marblehead", weather:"either", tags:["history"], note:"1768 Georgian mansion with original hand-painted wallpapers. Open June–October, Tue–Sat 10–4, last tour 3pm.", cost:"$10/adult", phone:"(781) 631-1768", website:"https://marbleheadmuseum.org/"},
+ {id:"devereux", title:"Beach day at Devereux Beach", place:"99 Ocean Ave, Marblehead", weather:"sun", tags:["nature"], note:"Harbor-view beach with picnic tables and a snack bar. Seasonal non-resident parking fee ($25–30/day).", phone:"(781) 631-0212", website:"https://marbleheadma.gov/beaches/"},
+ {id:"sistas", title:"Sistas Consignment", place:"86 Washington St, Marblehead", weather:"either", tags:["thrift"], note:"Curated secondhand designer clothing, shoes, and accessories.", phone:"(781) 658-7715", website:"https://www.sistasconsignment.com/"}
 ];
 
 const PRESETS = {
