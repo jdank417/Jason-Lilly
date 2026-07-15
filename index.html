@@ -206,6 +206,11 @@
   .day-list .card-remove{display:inline-flex}
   .card-remove:hover{background:#FBE3E9}
   .card-meta{font-weight:600;font-size:.7rem;color:var(--ink-soft);margin-top:3px}
+  .card-contact{display:flex;flex-wrap:wrap;gap:2px 10px;margin-top:3px;font-size:.72rem;font-weight:700;min-height:0}
+  .card-contact:empty{display:none}
+  .card-contact a{color:var(--accent);text-decoration:none}
+  .card-contact a:hover{text-decoration:underline}
+  .card-contact a:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
   .card-note{font-size:.78rem;color:var(--ink-soft);margin-top:5px;line-height:1.45;font-weight:500}
   .card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
   .tag{font-size:.66rem;font-weight:700;color:var(--ink-soft);background:var(--bg);border-radius:999px;padding:3px 9px}
@@ -293,6 +298,8 @@
   <button class="preset-chip" data-preset="ipswich">Ipswich &amp; Essex</button>
   <button class="preset-chip" data-preset="rainy">Rainy-Day Rescue</button>
   <button class="preset-chip" data-preset="staycation">Salem Staycation</button>
+  <button class="preset-chip" data-preset="history">Salem History Walk</button>
+  <button class="preset-chip" data-preset="foodie">Foodie &amp; Brew Trail</button>
 </div>
 
 <main class="layout">
@@ -307,11 +314,12 @@
       <button class="filter" data-filter="sun" aria-pressed="false">☀ Sun</button>
       <button class="filter" data-filter="rain" aria-pressed="false">☂ Rain</button>
       <button class="filter" data-filter="thrift" aria-pressed="false">Thrift</button>
-      <button class="filter" data-filter="games" aria-pressed="false">Casino &amp; Bingo</button>
+      <button class="filter" data-filter="games" aria-pressed="false">Games &amp; Casino</button>
       <button class="filter" data-filter="crafts" aria-pressed="false">Crafts</button>
       <button class="filter" data-filter="nature" aria-pressed="false">Nature</button>
       <button class="filter" data-filter="sailing" aria-pressed="false">Sailing</button>
       <button class="filter" data-filter="food" aria-pressed="false">Food</button>
+      <button class="filter" data-filter="history" aria-pressed="false">History</button>
     </div>
     <div class="locker-list" id="locker"></div>
     <details class="add-idea">
@@ -390,42 +398,59 @@ const SCHEMA = 4;
 const ACTIVITIES = [
  {id:"mhd-stroll", title:"Marblehead Old Town stroll", place:"Marblehead", weather:"sun", tags:["nature"], note:"Winding lanes, harbor views, gallery windows."},
  {id:"crocker", title:"Crocker Park & Fort Sewall overlook", place:"Marblehead", weather:"sun", tags:["nature"], note:"Best free harbor seats on the North Shore."},
- {id:"eyc-dinner", title:"Drinks or dinner at Eastern Yacht Club", place:"Marblehead", weather:"either", tags:["food","sailing"], note:"Porch if it's nice, dining room if it's not."},
- {id:"eyc-sail", title:"Harbor sail out of EYC", place:"Marblehead", weather:"sun", tags:["sailing","nature"], note:"Doctor-permitting — keep it a calm cruise."},
- {id:"pem", title:"Peabody Essex Museum", place:"Salem", weather:"rain", tags:["crafts"], note:"World-class art and maritime galleries, 10 min from home."},
+ {id:"eyc-dinner", title:"Drinks or dinner at Eastern Yacht Club", place:"Marblehead", weather:"either", tags:["food","sailing"], note:"Porch if it's nice, dining room if it's not.", phone:"(781) 631-1400", website:"https://www.easternyc.org/"},
+ {id:"eyc-sail", title:"Harbor sail out of EYC", place:"Marblehead", weather:"sun", tags:["sailing","nature"], note:"Doctor-permitting — keep it a calm cruise.", phone:"(781) 631-1400", website:"https://www.easternyc.org/"},
+ {id:"pem", title:"Peabody Essex Museum", place:"Salem", weather:"rain", tags:["crafts","history"], note:"World-class art and maritime galleries, 10 min from home.", phone:"(978) 745-9500", website:"https://www.pem.org/"},
  {id:"salem-thrift", title:"Salem vintage & consignment crawl", place:"Salem", weather:"either", tags:["thrift"], note:"Downtown consignment, vintage, and oddities shops."},
- {id:"bingo-fri", title:"Friday night bingo, St. John the Baptist", place:"Salem · Fri 6:30 PM", weather:"either", tags:["games"], note:"32 Saint Peter St. Call 978-744-1278 to confirm."},
- {id:"bingo-sat", title:"Saturday bingo, Saint Mary Italian Church", place:"Salem · Sat 6:45 PM", weather:"either", tags:["games"], note:"56 Margin St. Call 978-745-9740 to confirm."},
+ {id:"landing", title:"Dinner at The Landing", place:"Marblehead", weather:"either", tags:["food"], note:"Harbor-view seafood and cocktails, a public alternative to the club.", phone:"(781) 639-1266", website:"https://www.thelandingrestaurant.com/"},
  {id:"moody", title:"Moody Street food crawl", place:"Waltham", weather:"either", tags:["food"], note:"Waltham's restaurant row — celebrate the new keys."},
  {id:"charles", title:"Charles River walkway", place:"Waltham", weather:"sun", tags:["nature"], note:"Flat, easy riverside loop off Moody St."},
  {id:"waltham-thrift", title:"Waltham thrift stops", place:"near Moody St", weather:"either", tags:["thrift"], note:"Secondhand browsing between moving trips."},
- {id:"decordova", title:"deCordova Sculpture Park & Museum", place:"Lincoln", weather:"sun", tags:["crafts","nature"], note:"Art in the woods, 15 min from Waltham. Museum covers rain."},
- {id:"encore", title:"Encore Boston Harbor", place:"Everett", weather:"either", tags:["games","food"], note:"On the drive Waltham → Salem. Casino date night."},
+ {id:"decordova", title:"deCordova Sculpture Park & Museum", place:"Lincoln", weather:"sun", tags:["crafts","nature"], note:"Art in the woods, 15 min from Waltham. Indoor galleries are closed for renovation until 2028 — sculpture trails, cafe, and store are open.", phone:"(781) 259-8355", website:"https://thetrustees.org/place/decordova/"},
+ {id:"encore", title:"Encore Boston Harbor", place:"Everett", weather:"either", tags:["games","food"], note:"On the drive Waltham → Salem. Casino date night.", phone:"(857) 770-7000", website:"https://www.encorebostonharbor.com/"},
  {id:"nbpt", title:"Newburyport downtown + Oldies Marketplace", place:"Newburyport", weather:"either", tags:["thrift"], note:"Big antique/vintage warehouse plus brick downtown."},
- {id:"plum", title:"Parker River Wildlife Refuge", place:"Plum Island", weather:"sun", tags:["nature"], note:"Boardwalks, dunes, birds — drive-through friendly."},
- {id:"maudslay", title:"Maudslay State Park", place:"Newburyport", weather:"sun", tags:["nature"], note:"Old estate grounds and gardens along the Merrimack."},
+ {id:"plum", title:"Parker River Wildlife Refuge", place:"Plum Island", weather:"sun", tags:["nature"], note:"Boardwalks, dunes, birds — drive-through friendly.", phone:"(978) 465-5753", website:"https://www.fws.gov/refuge/parker-river"},
+ {id:"maudslay", title:"Maudslay State Park", place:"Newburyport", weather:"sun", tags:["nature"], note:"Old estate grounds and gardens along the Merrimack.", phone:"(978) 465-7223", website:"https://www.mass.gov/locations/maudslay-state-park"},
  {id:"bearskin", title:"Bearskin Neck shops & galleries", place:"Rockport", weather:"sun", tags:["thrift","crafts"], note:"Artist studios, fudge, and Motif No. 1."},
- {id:"halibut", title:"Halibut Point State Park", place:"Rockport", weather:"sun", tags:["nature"], note:"Quarry-to-ocean views; flat granite paths."},
- {id:"rockyneck", title:"Rocky Neck Art Colony", place:"Gloucester", weather:"sun", tags:["crafts"], note:"One of America's oldest working art colonies."},
- {id:"capeannmus", title:"Cape Ann Museum", place:"Gloucester", weather:"rain", tags:["crafts"], note:"Fitz Henry Lane seascapes; cozy on a gray day."},
+ {id:"halibut", title:"Halibut Point State Park", place:"Rockport", weather:"sun", tags:["nature"], note:"Quarry-to-ocean views; flat granite paths.", phone:"(978) 546-2997", website:"https://www.mass.gov/locations/halibut-point-state-park"},
+ {id:"rockyneck", title:"Rocky Neck Art Colony", place:"Gloucester", weather:"sun", tags:["crafts"], note:"One of America's oldest working art colonies.", phone:"(978) 515-7004", website:"https://rockyneckartcolony.org/"},
+ {id:"capeannmus", title:"Cape Ann Museum", place:"Gloucester · CAM Green, 13 Poplar St", weather:"rain", tags:["crafts","history"], note:"Fitz Henry Lane seascapes; cozy on a gray day. Downtown campus is under renovation — the collection is showing at the CAM Green location.", phone:"(978) 283-0455", website:"https://www.capeannmuseum.org/"},
  {id:"woodmans", title:"Fried clams at Woodman's", place:"Essex", weather:"either", tags:["food"], note:"The classic roadside clam shack, since 1914."},
  {id:"essex-antique", title:"Essex antique shop crawl", place:"Essex", weather:"either", tags:["thrift"], note:"A whole town of antique barns on Route 133."},
- {id:"crane", title:"Crane Estate grounds at Castle Hill", place:"Ipswich", weather:"sun", tags:["nature"], note:"Grand Allée lawn rolling straight to the sea."},
+ {id:"crane", title:"Crane Estate grounds at Castle Hill", place:"Ipswich", weather:"sun", tags:["nature"], note:"Grand Allée lawn rolling straight to the sea.", phone:"(978) 356-4351", website:"https://thetrustees.org/place/castle-hill-on-the-crane-estate/"},
  {id:"pottery", title:"Pottery-painting session", place:"North Shore studio", weather:"rain", tags:["crafts"], note:"Book a walk-in slot; take home a keepsake."},
  {id:"candles", title:"Candle-pouring workshop", place:"Salem area", weather:"rain", tags:["crafts"], note:"Anniversary-scented — check weekend openings."},
- {id:"willows", title:"Salem Willows arcade & waterfront", place:"Salem", weather:"either", tags:["games","nature"], note:"Skee-ball, popcorn, and a breezy point park."},
+ {id:"willows", title:"Salem Willows arcade & waterfront", place:"Salem", weather:"either", tags:["games","nature"], note:"Skee-ball, popcorn, and a breezy point park.", phone:"(978) 745-0251", website:"https://willowsarcade.com/"},
  {id:"derby", title:"Sunset walk to Derby Wharf Light", place:"Salem", weather:"sun", tags:["nature"], note:"Ten flat minutes out to the little lighthouse."},
  {id:"portsmouth", title:"Portsmouth day trip", place:"Portsmouth, NH", weather:"sun", tags:["thrift","nature","food"], note:"~50 min north: Market Square, Prescott Park, vintage shops."},
  {id:"cozy-lunch", title:"Long cozy lunch", place:"Salem", weather:"rain", tags:["food"], note:"Fireplace-adjacent, no agenda."},
- {id:"movie-night", title:"Takeout + movie recovery night", place:"Home", weather:"either", tags:["food"], note:"Zero jostling guaranteed."}
+ {id:"movie-night", title:"Takeout + movie recovery night", place:"Home", weather:"either", tags:["food"], note:"Zero jostling guaranteed."},
+ {id:"sevengables", title:"House of the Seven Gables", place:"Salem", weather:"either", tags:["history"], note:"Hawthorne's inspiration — 1668 mansion, secret staircase, seaside gardens.", phone:"(978) 744-0991", website:"https://7gables.org/"},
+ {id:"salemmaritime", title:"Salem Maritime National Historic Site", place:"Salem", weather:"either", tags:["history","nature"], note:"Free NPS site — historic wharves, a working tall-ship replica, the Custom House.", phone:"(978) 740-1650", website:"https://www.nps.gov/sama/"},
+ {id:"witch-museum", title:"Salem Witch Museum", place:"Salem", weather:"rain", tags:["history"], note:"The classic Salem intro — the 1692 trials, staged and narrated.", phone:"(978) 744-1692", website:"https://salemwitchmuseum.com/"},
+ {id:"customhouse", title:"Custom House Maritime Museum", place:"Newburyport", weather:"rain", tags:["history"], note:"Ship models, maritime art, and a real 19th-century customs house.", phone:"(978) 462-8681", website:"https://customhousemaritimemuseum.org/"},
+ {id:"schoonerfame", title:"Sail on the Schooner Fame", place:"Salem · Pickering Wharf", weather:"sun", tags:["sailing","nature"], note:"Public day sails on a War-of-1812 privateer replica. Seasonal, May–October.", phone:"(978) 729-7600", website:"https://www.schoonerfame.com/"},
+ {id:"salem-ferry", title:"Salem Ferry to Boston", place:"Salem · 10 Blaney St", weather:"sun", tags:["sailing"], note:"55-minute high-speed catamaran to Long Wharf and back. Seasonal, mid-May–Halloween.", phone:"(888) 534-3516", website:"https://www.salemferry.com/"},
+ {id:"winter-island", title:"Winter Island Park", place:"Salem", weather:"sun", tags:["nature"], note:"Harbor-front park with a lighthouse, small beach, and walking paths.", phone:"(978) 745-9430", website:"https://www.salemma.gov/526/Winter-Island-Park"},
+ {id:"appleton", title:"Appleton Farms walking trails", place:"Ipswich", weather:"sun", tags:["nature"], note:"Working farm with miles of easy trails through fields and woods.", phone:"(978) 356-5728", website:"https://thetrustees.org/place/appleton-farms/"},
+ {id:"ravenswood", title:"Ravenswood Park", place:"Gloucester", weather:"sun", tags:["nature"], note:"600 quiet wooded acres and the Old Salem Road trail, off the Cape Ann Loop.", phone:"(978) 281-8400", website:"https://thetrustees.org/place/ravenswood-park/"},
+ {id:"wolfhollow", title:"Wolf Hollow", place:"Ipswich", weather:"sun", tags:["nature"], note:"Small gray-wolf sanctuary with educational talks. Open to the public Sat & Sun, 10:00–1:30 only.", phone:"(978) 356-0216", website:"https://www.wolfhollowipswich.org/"},
+ {id:"notch", title:"Notch Brewing taproom", place:"Salem", weather:"either", tags:["food"], note:"Czech- and German-style lagers, beer garden on the South River.", phone:"(978) 412-7674", website:"https://www.notchbrewing.com/"},
+ {id:"gulu-gulu", title:"Gulu-Gulu Cafe", place:"Salem", weather:"either", tags:["food"], note:"Cozy sandwiches, crepes, and a deep beer list — good on a rainy afternoon too.", phone:"(978) 740-8882", website:"https://www.gulugulucafe.com/"},
+ {id:"turners", title:"Turner's Seafood at Lyceum Hall", place:"Salem", weather:"either", tags:["food"], note:"Fresh seafood in a historic downtown hall.", phone:"(978) 745-7665", website:"https://www.turners-seafood.com/"},
+ {id:"sealevel", title:"Sea Level Oyster Bar", place:"Salem", weather:"either", tags:["food"], note:"Raw bar and harbor views on Pickering Wharf.", phone:"(978) 741-0555", website:"https://sealeveloysterbar.com/"},
+ {id:"riverwalk", title:"Riverwalk Brewing taproom", place:"Newburyport", weather:"either", tags:["food"], note:"Riverside brewery near the Newburyport waterfront.", phone:"(978) 499-2337", website:"https://riverwalkbrewing.com/"},
+ {id:"stained-hourglass", title:"Stained Hourglass Escapes", place:"Salem", weather:"rain", tags:["games"], note:"One-hour puzzle escape room downtown — book ahead.", phone:"(978) 607-4273", website:"https://www.stainedhourglass.com/"}
 ];
 
 const PRESETS = {
- harbor:{ fri:["mhd-stroll","crocker","eyc-dinner","bingo-fri"], sat:["moody","decordova","encore"], sun:["eyc-sail","derby","eyc-dinner"] },
- capeann:{ fri:["pem","salem-thrift","bingo-fri"], sat:["moody","charles","encore"], sun:["bearskin","halibut","rockyneck","woodmans"] },
- ipswich:{ fri:["mhd-stroll","eyc-dinner","bingo-fri"], sat:["moody","waltham-thrift","encore"], sun:["crane","essex-antique","woodmans"] },
- rainy:{ fri:["pem","cozy-lunch","bingo-fri"], sat:["moody","encore"], sun:["pottery","salem-thrift","willows","bingo-sat"] },
- staycation:{ fri:["salem-thrift","cozy-lunch","bingo-fri"], sat:["moody","charles","encore"], sun:["willows","derby","candles"] }
+ harbor:{ fri:["mhd-stroll","crocker","eyc-dinner","notch"], sat:["moody","decordova","encore"], sun:["eyc-sail","derby","eyc-dinner"] },
+ capeann:{ fri:["pem","salem-thrift","gulu-gulu"], sat:["moody","charles","encore"], sun:["bearskin","halibut","rockyneck","woodmans"] },
+ ipswich:{ fri:["mhd-stroll","eyc-dinner","stained-hourglass"], sat:["moody","waltham-thrift","encore"], sun:["crane","essex-antique","woodmans"] },
+ rainy:{ fri:["pem","cozy-lunch","witch-museum"], sat:["moody","encore"], sun:["pottery","salem-thrift","willows","sevengables"] },
+ staycation:{ fri:["salem-thrift","cozy-lunch","turners"], sat:["moody","charles","encore"], sun:["willows","derby","candles"] },
+ history:{ fri:["sevengables","witch-museum","turners"], sat:["moody","decordova","encore"], sun:["salemmaritime","customhouse","derby"] },
+ foodie:{ fri:["notch","gulu-gulu","eyc-dinner"], sat:["moody","turners","encore"], sun:["sealevel","woodmans","riverwalk"] }
 };
 
 /* ── State ─────────────────────────────────────────────────
@@ -550,7 +575,7 @@ function commitOrderFromDOM(){
 }
 
 /* ── Rendering ─────────────────────────────────────────── */
-const TAG_LABELS = {thrift:"Thrift", games:"Casino & Bingo", crafts:"Crafts", nature:"Nature", sailing:"Sailing", food:"Food"};
+const TAG_LABELS = {thrift:"Thrift", games:"Games & Casino", crafts:"Crafts", nature:"Nature", sailing:"Sailing", food:"Food", history:"History"};
 const WEATHER_LABELS = {sun:"Sun", rain:"Rain", either:"Any"};
 
 function populateCard(el, act){
@@ -563,6 +588,23 @@ function populateCard(el, act){
   el.querySelector(".card-meta").textContent = [act.time, act.place].filter(Boolean).join(" · ");
   el.querySelector(".card-note").textContent = act.note || "";
   el.querySelector(".card-tags").innerHTML = (act.tags||[]).map(t=>`<span class="tag">${TAG_LABELS[t]||t}</span>`).join("");
+  const contact = el.querySelector(".card-contact");
+  contact.innerHTML = "";
+  if(act.phone){
+    const a = document.createElement("a");
+    a.href = "tel:" + act.phone.replace(/[^\d+]/g,"");
+    a.textContent = act.phone;
+    contact.appendChild(a);
+  }
+  if(act.website){
+    if(act.phone) contact.appendChild(document.createTextNode(" · "));
+    const a = document.createElement("a");
+    a.href = act.website;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.textContent = "Website";
+    contact.appendChild(a);
+  }
   syncFavIcon(el);
 }
 
@@ -581,6 +623,7 @@ function cardEl(act){
       </div>
     </div>
     <div class="card-meta"></div>
+    <div class="card-contact"></div>
     <div class="card-note"></div>
     <div class="card-tags"></div>
     <div class="card-edit">
@@ -789,7 +832,7 @@ document.getElementById("copyBtn").addEventListener("click", ()=>{
     if(ids.length===0){ out += "  (nothing planned yet)\n"; }
     ids.forEach((cid,i)=>{
       const a = getActivity(cid);
-      if(a) out += `  ${i+1}. ${a.title}${a.time ? " @ "+a.time : ""}${a.place ? " — "+a.place : ""}\n`;
+      if(a) out += `  ${i+1}. ${a.title}${a.time ? " @ "+a.time : ""}${a.place ? " — "+a.place : ""}${a.phone ? " · "+a.phone : ""}\n`;
     });
   });
   navigator.clipboard.writeText(out)

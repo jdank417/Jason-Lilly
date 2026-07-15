@@ -9,9 +9,26 @@ Open `index.html` in a browser — no build step, no install.
 - Filter ideas by weather, category, or ★ Favorites
 - Click ✎ on any idea to edit its name, place, time, or note
 - Click ★ to favorite an idea
-- Load a starter plan, or add your own ideas
+- 7 starter plans (Harbor Classic, Cape Ann Loop, Ipswich & Essex, Rainy-Day
+  Rescue, Salem Staycation, Salem History Walk, Foodie & Brew Trail), or add
+  your own ideas
+- Phone number and website links right on any idea that names a specific
+  business or venue
 - "Copy plan as text" to paste the board anywhere
 - Saves automatically to your browser (localStorage)
+
+## A note on the idea data
+
+Every phone number and website in the locker was looked up, not guessed —
+guessing a phone number for a real business is exactly the kind of thing that
+sends someone to the wrong place. Two entries that shipped earlier ("Friday
+bingo at St. John the Baptist" and "Saturday bingo at Saint Mary Italian
+Church") turned out to be stale: St. John's bingo ended in 2016, and Saint
+Mary's Italian Church stopped operating as a parish in 2003. Both were
+removed and replaced with verified alternatives. Hours, prices, and seasonal
+schedules (marked in the notes where relevant, e.g. the Schooner Fame and
+Salem Ferry both run May–October) can still change after the fact — that's
+what the phone numbers are for.
 
 ## Live sync with your partner (optional)
 
