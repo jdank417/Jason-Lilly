@@ -2,91 +2,118 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Anniversary Chart · July 31 – August 2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>💛 The Anniversary Chart · July 31 – August 2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Public+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#16283D;
-    --ink-soft:#3A4C61;
-    --fog:#EDF1EF;
-    --card:#FBFCFA;
-    --gold:#D9A62E;
-    --gold-deep:#B8871B;
-    --kelp:#33654F;
-    --rain:#4A6FA5;
-    --signal:#B3402F;
-    --line:#C7D1CD;
-    --shadow:0 2px 10px rgba(22,40,61,.10);
-    --radius:10px;
-    --font-display:"Bricolage Grotesque",sans-serif;
-    --font-body:"Public Sans",sans-serif;
-    --font-mono:"IBM Plex Mono",monospace;
+    --ink:#4A3B6B;
+    --ink-soft:#8577A6;
+    --fog:#FFF8FB;
+    --card:#FFFFFF;
+    --gold:#FFC857;
+    --gold-deep:#F4A93E;
+    --kelp:#6FCF97;
+    --rain:#7EC8FF;
+    --signal:#FF7A93;
+    --line:#F3DFEF;
+    --shadow:0 10px 26px rgba(146,110,180,.18);
+    --radius:22px;
+    --font-display:"Baloo 2",cursive;
+    --font-body:"Quicksand",sans-serif;
+    --font-mono:"Quicksand",sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
   body{
     font-family:var(--font-body);
+    font-weight:500;
     color:var(--ink);
     background-color:var(--fog);
     background-image:
-      linear-gradient(rgba(22,40,61,.045) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(22,40,61,.045) 1px, transparent 1px);
-    background-size:56px 56px;
+      radial-gradient(rgba(255,200,87,.4) 1.6px, transparent 1.6px),
+      radial-gradient(rgba(126,200,255,.32) 1.6px, transparent 1.6px);
+    background-size:26px 26px, 26px 26px;
+    background-position:0 0, 13px 13px;
     min-height:100vh;
+    -webkit-tap-highlight-color:transparent;
   }
   button{font-family:inherit;cursor:pointer}
 
-  /* ── Header: the harbor log strip ─────────────────────── */
+  /* ── Header ────────────────────────────────────────────── */
   header{
-    background:var(--ink);
-    color:var(--fog);
-    padding:26px 22px 22px;
-    border-bottom:4px solid var(--gold);
+    background:linear-gradient(135deg, #6E5A9C, #8577C4 55%, #6FA6D8);
+    color:#fff;
+    padding:28px 22px 34px;
+    padding-top:calc(28px + env(safe-area-inset-top));
+    padding-left:calc(22px + env(safe-area-inset-left));
+    padding-right:calc(22px + env(safe-area-inset-right));
+    position:relative;
+    overflow:hidden;
+    border-radius:0 0 28px 28px;
+    box-shadow:0 10px 30px rgba(110,90,156,.35);
   }
-  .header-inner{max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 24px}
-  .eyebrow{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);width:100%}
-  h1{font-family:var(--font-display);font-weight:800;font-size:clamp(1.6rem,4.5vw,2.6rem);line-height:1.05}
-  .dates{font-family:var(--font-mono);font-size:.85rem;color:#B9C6D2}
-  .header-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  header::after{
+    content:"✨";
+    position:absolute;
+    top:14px;right:20px;
+    font-size:1.5rem;
+    opacity:.85;
+    transform:rotate(12deg);
+  }
+  .header-inner{max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 24px;position:relative;z-index:1}
+  .eyebrow{font-family:var(--font-mono);font-weight:700;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:#FFE9A8;width:100%}
+  h1{font-family:var(--font-display);font-weight:800;font-size:clamp(1.7rem,5.5vw,2.7rem);line-height:1.1}
+  .dates{font-family:var(--font-mono);font-weight:600;font-size:.88rem;color:#EAE3FA}
+  .header-actions{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap;width:100%}
+  @media(min-width:520px){ .header-actions{width:auto} }
   .btn{
-    border:1.5px solid var(--line);
+    border:2px solid var(--line);
     background:var(--card);
     color:var(--ink);
     border-radius:999px;
-    padding:8px 16px;
-    font-size:.82rem;
-    font-weight:600;
-    transition:transform .12s ease, box-shadow .12s ease;
+    padding:11px 20px;
+    min-height:44px;
+    font-size:.85rem;
+    font-weight:700;
+    flex:1 1 auto;
+    text-align:center;
+    transition:transform .15s cubic-bezier(.34,1.56,.64,1), box-shadow .15s ease;
   }
-  .btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+  @media(min-width:520px){ .btn{flex:0 0 auto} }
+  .btn:hover{transform:translateY(-2px) scale(1.03);box-shadow:var(--shadow)}
+  .btn:active{transform:translateY(0) scale(.98)}
   .btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
-  .btn-dark{background:transparent;color:var(--fog);border-color:#4A5C71}
-  .btn-gold{background:var(--gold);border-color:var(--gold-deep);color:var(--ink)}
+  .btn-dark{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.5)}
+  .btn-gold{background:var(--gold);border-color:var(--gold-deep);color:#4A3010}
 
   /* ── Preset bar ────────────────────────────────────────── */
   .preset-bar{
-    max-width:1280px;margin:18px auto 0;padding:0 22px;
+    max-width:1280px;margin:20px auto 0;padding:0 22px 6px;
     display:flex;align-items:center;gap:10px;flex-wrap:wrap;
   }
-  .preset-bar label{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+  .preset-bar label{font-family:var(--font-mono);font-weight:700;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
   .preset-chip{
-    border:1.5px solid var(--ink);
+    border:2px solid var(--ink);
     background:var(--card);
-    border-radius:6px;
-    padding:7px 13px;
-    font-size:.8rem;
-    font-weight:600;
+    border-radius:999px;
+    padding:9px 16px;
+    min-height:40px;
+    font-size:.82rem;
+    font-weight:700;
     position:relative;
+    transition:transform .15s cubic-bezier(.34,1.56,.64,1), background .15s ease, color .15s ease;
   }
-  .preset-chip:hover{background:var(--ink);color:var(--fog)}
+  .preset-chip:hover{background:var(--ink);color:#fff;transform:translateY(-2px) rotate(-1deg)}
   .preset-chip:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 
   /* ── Layout ────────────────────────────────────────────── */
   .layout{
     max-width:1280px;margin:20px auto 60px;padding:0 22px;
+    padding-left:calc(22px + env(safe-area-inset-left));
+    padding-right:calc(22px + env(safe-area-inset-right));
     display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start;
   }
   @media(max-width:900px){.layout{grid-template-columns:1fr}}
@@ -94,7 +121,7 @@
   /* ── Idea locker ───────────────────────────────────────── */
   .locker{
     background:var(--card);
-    border:1.5px solid var(--line);
+    border:2.5px solid var(--line);
     border-radius:var(--radius);
     box-shadow:var(--shadow);
     position:sticky;top:14px;
@@ -104,132 +131,163 @@
   }
   @media(max-width:900px){.locker{position:static;max-height:none}}
   .locker-head{
-    padding:14px 16px 10px;
-    border-bottom:1.5px solid var(--line);
+    padding:16px 18px 10px;
+    border-bottom:2px dashed var(--line);
   }
-  .locker-head h2{font-family:var(--font-display);font-size:1.05rem;font-weight:800}
-  .locker-head p{font-size:.76rem;color:var(--ink-soft);margin-top:2px}
-  .filters{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px;border-bottom:1.5px solid var(--line)}
+  .locker-head h2{font-family:var(--font-display);font-size:1.15rem;font-weight:700;color:var(--ink)}
+  .locker-head p{font-size:.78rem;color:var(--ink-soft);margin-top:3px;font-weight:600}
+  .filters{display:flex;flex-wrap:wrap;gap:7px;padding:12px 16px;border-bottom:2px dashed var(--line)}
   .filter{
-    border:1px solid var(--line);
+    border:2px solid var(--line);
     background:var(--fog);
     border-radius:999px;
-    padding:4px 10px;
-    font-size:.72rem;
-    font-weight:600;
+    padding:6px 12px;
+    min-height:34px;
+    font-size:.74rem;
+    font-weight:700;
     color:var(--ink-soft);
+    transition:transform .12s ease;
   }
-  .filter[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--fog)}
+  .filter[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff;transform:scale(1.04)}
   .filter:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
-  .locker-list{padding:12px;overflow-y:auto;flex:1;min-height:120px}
-  @media(max-width:900px){.locker-list{max-height:320px}}
-  .locker-empty{font-size:.8rem;color:var(--ink-soft);padding:10px;text-align:center}
+  .locker-list{padding:14px;overflow-y:auto;flex:1;min-height:120px}
+  @media(max-width:900px){.locker-list{max-height:min(46vh,380px)}}
+  .locker-empty{font-size:.82rem;color:var(--ink-soft);padding:12px;text-align:center;font-weight:600}
 
   /* ── Day columns ───────────────────────────────────────── */
   .days{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
   @media(max-width:1100px){.days{grid-template-columns:1fr}}
   .day{
     background:var(--card);
-    border:1.5px solid var(--line);
+    border:2.5px solid var(--line);
     border-radius:var(--radius);
     box-shadow:var(--shadow);
     display:flex;flex-direction:column;
     overflow:hidden;
   }
   .day-head{
-    background:var(--ink);
-    color:var(--fog);
-    padding:12px 14px 10px;
+    background:linear-gradient(120deg, var(--ink), #6E5A9C);
+    color:#fff;
+    padding:14px 16px 24px;
     position:relative;
   }
-  .day-head::after{ /* signal-flag tick */
+  .day-head::after{ /* scalloped bunting edge */
     content:"";
-    position:absolute;right:0;top:0;
-    width:26px;height:26px;
-    background:linear-gradient(135deg, var(--gold) 50%, transparent 50%);
-    transform:rotate(90deg);
+    position:absolute;left:0;right:0;bottom:-1px;height:14px;
+    background-image:radial-gradient(circle at 10px 0, transparent 9px, var(--card) 10px);
+    background-size:20px 14px;
+    background-repeat:repeat-x;
   }
-  .day-num{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
-  .day-head h3{font-family:var(--font-display);font-size:1.15rem;font-weight:800;line-height:1.15}
-  .day-note{font-size:.72rem;color:#B9C6D2;margin-top:3px}
-  .day-list{padding:12px;flex:1;min-height:160px}
-  .day-list.drag-over{background:#F3EDD8}
+  .day-sticker{
+    position:absolute;top:10px;right:14px;
+    font-size:1.5rem;
+    transform:rotate(10deg);
+    filter:drop-shadow(0 2px 2px rgba(0,0,0,.2));
+  }
+  .day-num{font-family:var(--font-mono);font-weight:700;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#FFE9A8}
+  .day-head h3{font-family:var(--font-display);font-size:1.25rem;font-weight:700;line-height:1.2}
+  .day-note{font-size:.76rem;color:#EAE3FA;margin-top:3px;font-weight:600}
+  .day-list{padding:14px;flex:1;min-height:160px}
+  .day-list.drag-over{background:#FFF2D6}
 
   /* ── Cards ─────────────────────────────────────────────── */
   .card-item{
     background:var(--fog);
-    border:1.5px solid var(--line);
-    border-radius:8px;
-    padding:10px 12px 10px 14px;
-    margin-bottom:10px;
+    border:2px solid var(--line);
+    border-radius:16px;
+    padding:11px 13px 12px 16px;
+    margin-bottom:11px;
     position:relative;
     cursor:grab;
     touch-action:none;
+    transition:transform .15s ease, box-shadow .15s ease;
   }
+  .card-item:hover{transform:translateY(-2px) rotate(-.6deg);box-shadow:var(--shadow)}
   .card-item:active{cursor:grabbing}
-  .card-item::before{ /* halyard edge */
-    content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
-    border-radius:8px 0 0 8px;background:var(--gold);
+  .card-item::before{ /* candy-stripe edge */
+    content:"";position:absolute;left:0;top:0;bottom:0;width:5px;
+    border-radius:16px 0 0 16px;background:var(--gold);
   }
   .card-item[data-weather="sun"]::before{background:var(--kelp)}
   .card-item[data-weather="rain"]::before{background:var(--rain)}
   .sortable-ghost{opacity:.35}
-  .sortable-drag{box-shadow:0 8px 24px rgba(22,40,61,.25)}
+  .sortable-drag{box-shadow:0 12px 28px rgba(74,59,107,.3)!important;transform:rotate(2deg)!important}
   .card-top{display:flex;align-items:flex-start;gap:8px}
-  .card-title{font-weight:700;font-size:.88rem;line-height:1.25;flex:1}
-  .pennant{ /* signature: pennant-shaped weather badge */
+  .card-title{font-weight:700;font-size:.9rem;line-height:1.3;flex:1}
+  .pennant{ /* whimsical weather pill */
     flex-shrink:0;
     font-family:var(--font-mono);
-    font-size:.6rem;
-    font-weight:500;
-    letter-spacing:.08em;
-    text-transform:uppercase;
+    font-size:.66rem;
+    font-weight:700;
+    letter-spacing:.02em;
     color:#fff;
-    padding:3px 14px 3px 7px;
-    clip-path:polygon(0 0, 100% 0, calc(100% - 9px) 50%, 100% 100%, 0 100%);
+    padding:4px 10px;
+    border-radius:999px;
+    white-space:nowrap;
   }
   .pennant.sun{background:var(--kelp)}
   .pennant.rain{background:var(--rain)}
   .pennant.either{background:var(--gold-deep)}
-  .card-place{font-family:var(--font-mono);font-size:.68rem;color:var(--ink-soft);margin-top:2px}
-  .card-note{font-size:.75rem;color:var(--ink-soft);margin-top:5px;line-height:1.4}
-  .card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
-  .tag{font-size:.64rem;font-weight:600;color:var(--ink-soft);background:#E2E8E5;border-radius:4px;padding:2px 6px}
+  .card-place{font-family:var(--font-mono);font-weight:600;font-size:.7rem;color:var(--ink-soft);margin-top:3px}
+  .card-note{font-size:.78rem;color:var(--ink-soft);margin-top:6px;line-height:1.45;font-weight:500}
+  .card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+  .tag{font-size:.66rem;font-weight:700;color:var(--ink);background:#F0E4FA;border-radius:999px;padding:3px 9px}
   .card-remove{
     position:absolute;top:6px;right:6px;
     display:none;
+    align-items:center;justify-content:center;
+    min-width:30px;min-height:30px;
     border:none;background:transparent;color:var(--signal);
-    font-size:.9rem;line-height:1;padding:4px;
-    border-radius:4px;
+    font-size:1rem;line-height:1;
+    border-radius:999px;
   }
-  .day-list .card-remove{display:block}
-  .card-remove:hover{background:#F4E0DC}
+  .day-list .card-remove{display:flex}
+  .card-remove:hover{background:#FFE1E7}
   .card-remove:focus-visible{outline:2px solid var(--signal)}
-  .day-list .pennant{margin-right:20px}
+  .day-list .pennant{margin-right:24px}
 
   /* ── Add idea + footer ─────────────────────────────────── */
-  .add-idea{padding:12px 16px;border-top:1.5px solid var(--line)}
-  .add-idea summary{font-size:.78rem;font-weight:700;cursor:pointer;color:var(--ink-soft)}
+  .add-idea{padding:14px 18px;border-top:2px dashed var(--line)}
+  .add-idea summary{font-size:.82rem;font-weight:700;cursor:pointer;color:var(--ink-soft)}
   .add-idea input,.add-idea select{
-    width:100%;margin-top:8px;padding:8px 10px;
-    border:1.5px solid var(--line);border-radius:6px;
-    font-family:inherit;font-size:.8rem;background:var(--fog);color:var(--ink);
+    width:100%;margin-top:9px;padding:11px 12px;
+    border:2px solid var(--line);border-radius:12px;
+    font-family:inherit;font-size:16px;font-weight:600;background:var(--fog);color:var(--ink);
   }
   .add-idea input:focus-visible,.add-idea select:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
-  .add-idea button{margin-top:8px;width:100%}
+  .add-idea button{margin-top:10px;width:100%}
   footer{
     max-width:1280px;margin:0 auto 40px;padding:0 22px;
-    font-family:var(--font-mono);font-size:.7rem;color:var(--ink-soft);
+    padding-left:calc(22px + env(safe-area-inset-left));
+    padding-right:calc(22px + env(safe-area-inset-right));
+    font-family:var(--font-mono);font-weight:600;font-size:.74rem;color:var(--ink-soft);
+    text-align:center;
   }
   .toast{
     position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);
-    background:var(--ink);color:var(--fog);
-    padding:10px 18px;border-radius:999px;font-size:.82rem;
-    box-shadow:var(--shadow);transition:transform .25s ease;z-index:50;
+    background:var(--ink);color:#fff;
+    padding:12px 20px;border-radius:999px;font-size:.85rem;font-weight:700;
+    max-width:calc(100% - 32px);text-align:center;
+    box-shadow:var(--shadow);transition:transform .25s cubic-bezier(.34,1.56,.64,1);z-index:50;
   }
   .toast.show{transform:translateX(-50%) translateY(0)}
   @media(prefers-reduced-motion:reduce){
     *{transition:none!important;animation:none!important}
+  }
+
+  /* ── Small screens ─────────────────────────────────────── */
+  @media(max-width:640px){
+    header{padding-top:calc(22px + env(safe-area-inset-top));padding-bottom:26px;border-radius:0 0 20px 20px}
+    .header-actions .btn{min-width:0}
+    .preset-bar{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;padding-bottom:10px}
+    .preset-bar label{width:auto;white-space:nowrap;flex-shrink:0}
+    .preset-chip{flex-shrink:0;scroll-snap-align:start}
+    .layout{margin-top:16px}
+    .day-head h3{font-size:1.1rem}
+  }
+  @media(max-width:400px){
+    .layout,.preset-bar,footer{padding-left:14px;padding-right:14px}
+    header{padding-left:14px;padding-right:14px}
   }
 </style>
 </head>
@@ -237,45 +295,45 @@
 
 <header>
   <div class="header-inner">
-    <span class="eyebrow">One year · charted together</span>
-    <h1>The Anniversary Chart</h1>
+    <span class="eyebrow">One year, charted together 💕</span>
+    <h1>⛵ The Anniversary Chart</h1>
     <span class="dates">FRI JUL 31 — SUN AUG 2, 2026 · Salem, MA home port</span>
     <div class="header-actions">
-      <button class="btn btn-gold" id="copyBtn">Copy plan as text</button>
-      <button class="btn btn-dark" id="resetBtn">Reset board</button>
+      <button class="btn btn-gold" id="copyBtn">📋 Copy plan as text</button>
+      <button class="btn btn-dark" id="resetBtn">🔄 Reset board</button>
     </div>
   </div>
 </header>
 
 <div class="preset-bar">
   <label>Load a starter plan:</label>
-  <button class="preset-chip" data-preset="harbor">Harbor Classic</button>
-  <button class="preset-chip" data-preset="capeann">Cape Ann Loop</button>
-  <button class="preset-chip" data-preset="ipswich">Ipswich &amp; Essex</button>
-  <button class="preset-chip" data-preset="rainy">Rainy-Day Rescue</button>
-  <button class="preset-chip" data-preset="staycation">Salem Staycation</button>
+  <button class="preset-chip" data-preset="harbor">⚓ Harbor Classic</button>
+  <button class="preset-chip" data-preset="capeann">🌊 Cape Ann Loop</button>
+  <button class="preset-chip" data-preset="ipswich">🦞 Ipswich &amp; Essex</button>
+  <button class="preset-chip" data-preset="rainy">☔ Rainy-Day Rescue</button>
+  <button class="preset-chip" data-preset="staycation">🏠 Salem Staycation</button>
 </div>
 
 <main class="layout">
 
   <aside class="locker" aria-label="Idea locker">
     <div class="locker-head">
-      <h2>Idea Locker</h2>
+      <h2>💌 Idea Locker</h2>
       <p>Drag ideas onto a day. Colored edge = best weather.</p>
     </div>
     <div class="filters" role="group" aria-label="Filter ideas">
-      <button class="filter" data-filter="sun" aria-pressed="false">Sun</button>
-      <button class="filter" data-filter="rain" aria-pressed="false">Rain</button>
-      <button class="filter" data-filter="thrift" aria-pressed="false">Thrift</button>
-      <button class="filter" data-filter="games" aria-pressed="false">Casino &amp; Bingo</button>
-      <button class="filter" data-filter="crafts" aria-pressed="false">Crafts</button>
-      <button class="filter" data-filter="nature" aria-pressed="false">Nature</button>
-      <button class="filter" data-filter="sailing" aria-pressed="false">Sailing</button>
-      <button class="filter" data-filter="food" aria-pressed="false">Food</button>
+      <button class="filter" data-filter="sun" aria-pressed="false">☀️ Sun</button>
+      <button class="filter" data-filter="rain" aria-pressed="false">🌧️ Rain</button>
+      <button class="filter" data-filter="thrift" aria-pressed="false">🛍️ Thrift</button>
+      <button class="filter" data-filter="games" aria-pressed="false">🎰 Casino &amp; Bingo</button>
+      <button class="filter" data-filter="crafts" aria-pressed="false">🎨 Crafts</button>
+      <button class="filter" data-filter="nature" aria-pressed="false">🌿 Nature</button>
+      <button class="filter" data-filter="sailing" aria-pressed="false">⛵ Sailing</button>
+      <button class="filter" data-filter="food" aria-pressed="false">🍦 Food</button>
     </div>
     <div class="locker-list" id="locker"></div>
     <details class="add-idea">
-      <summary>+ Add your own idea</summary>
+      <summary>✨ Add your own idea</summary>
       <input type="text" id="newTitle" placeholder="Idea (e.g. Mini golf rematch)" maxlength="60">
       <input type="text" id="newPlace" placeholder="Place (optional)" maxlength="60">
       <select id="newWeather">
@@ -283,13 +341,14 @@
         <option value="sun">Good weather</option>
         <option value="rain">Bad weather</option>
       </select>
-      <button class="btn" id="addBtn">Add to locker</button>
+      <button class="btn" id="addBtn">Add to locker 💛</button>
     </details>
   </aside>
 
   <section class="days" aria-label="Weekend days">
     <div class="day">
       <div class="day-head">
+        <span class="day-sticker">🌙</span>
         <span class="day-num">Day 01 · Friday</span>
         <h3>July 31</h3>
         <p class="day-note">Easy-pace day — keep it gentle</p>
@@ -298,6 +357,7 @@
     </div>
     <div class="day">
       <div class="day-head">
+        <span class="day-sticker">📦</span>
         <span class="day-num">Day 02 · Saturday</span>
         <h3>August 1</h3>
         <p class="day-note">Waltham move day — plan around the boxes</p>
@@ -306,6 +366,7 @@
     </div>
     <div class="day">
       <div class="day-head">
+        <span class="day-sticker">💖</span>
         <span class="day-num">Day 03 · Sunday</span>
         <h3>August 2</h3>
         <p class="day-note">The main event</p>
@@ -317,7 +378,7 @@
 </main>
 
 <footer>
-  BOARD SAVES AUTOMATICALLY IN THIS BROWSER · BINGO &amp; WORKSHOP TIMES CHANGE — CALL AHEAD
+  💡 BOARD SAVES AUTOMATICALLY IN THIS BROWSER · BINGO &amp; WORKSHOP TIMES CHANGE — CALL AHEAD
 </footer>
 
 <div class="toast" id="toast" role="status"></div>
@@ -397,8 +458,8 @@ function findActivity(id){
 }
 
 /* ── Rendering ─────────────────────────────────────────── */
-const TAG_LABELS = {thrift:"Thrift", games:"Casino & Bingo", crafts:"Crafts", nature:"Nature", sailing:"Sailing", food:"Food"};
-const WEATHER_LABELS = {sun:"Sun", rain:"Rain", either:"Any"};
+const TAG_LABELS = {thrift:"🛍️ Thrift", games:"🎰 Casino & Bingo", crafts:"🎨 Crafts", nature:"🌿 Nature", sailing:"⛵ Sailing", food:"🍦 Food"};
+const WEATHER_LABELS = {sun:"☀️ Sun", rain:"🌧️ Rain", either:"🌈 Any"};
 
 function cardEl(act){
   const el = document.createElement("div");
@@ -485,14 +546,14 @@ document.querySelectorAll(".preset-chip").forEach(btn=>{
                    .concat(customIdeas.map(a=>a.id));
     render({fri:[...p.fri], sat:[...p.sat], sun:[...p.sun], locker, custom:customIdeas});
     saveState();
-    toast(`Loaded "${btn.textContent}" — now make it yours`);
+    toast(`Loaded "${btn.textContent.trim()}" — now make it yours ✨`);
   });
 });
 
 /* ── Add custom idea ───────────────────────────────────── */
 document.getElementById("addBtn").addEventListener("click", ()=>{
   const title = document.getElementById("newTitle").value.trim();
-  if(!title){ toast("Give the idea a name first"); return; }
+  if(!title){ toast("Give the idea a name first 💭"); return; }
   const act = {
     id:"custom-"+Date.now(),
     title,
@@ -505,7 +566,7 @@ document.getElementById("addBtn").addEventListener("click", ()=>{
   document.getElementById("newTitle").value="";
   document.getElementById("newPlace").value="";
   saveState();
-  toast("Added to the locker");
+  toast("Added to the locker 💛");
 });
 
 /* ── Copy plan / reset / toast ─────────────────────────── */
@@ -521,7 +582,7 @@ document.getElementById("copyBtn").addEventListener("click", ()=>{
     });
   });
   navigator.clipboard.writeText(out)
-    .then(()=>toast("Plan copied — paste it anywhere"))
+    .then(()=>toast("Plan copied — paste it anywhere 📋"))
     .catch(()=>toast("Couldn't copy on this browser"));
 });
 
@@ -530,7 +591,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
   customIdeas = [];
   render(defaultState());
   saveState();
-  toast("Fresh chart");
+  toast("Fresh chart ✨");
 });
 
 let toastTimer;
