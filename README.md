@@ -34,6 +34,15 @@ between two people (e.g. you and Lilly, on two different phones/computers):
    ideas, adding notes, favoriting) show up on the other's screen.
 
 Without this step the app still works fully, it just won't sync between
-devices. Note: if you're both editing the exact same idea's note at the same
-moment, the last save wins — there's no merge, just a straightforward
-whole-board sync.
+devices.
+
+### How sync actually works
+
+Rather than overwriting the entire board on every change, the app syncs each
+piece independently: each day's list, each idea's favorite state, and each
+idea's edits are stored and written separately. That means you and Lilly can
+drag different ideas, favorite different things, or edit different notes at
+the exact same moment with zero conflict — nothing gets clobbered. The one
+case that still resolves as "last save wins" is two people reordering the
+*same day's list* in the same instant, which is rare enough in practice not
+to matter.

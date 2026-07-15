@@ -425,50 +425,64 @@ const PRESETS = {
  staycation:{ fri:["salem-thrift","cozy-lunch","bingo-fri"], sat:["moody","charles","encore"], sun:["willows","derby","candles"] }
 };
 
-/* ── State ─────────────────────────────────────────────── */
-let customIdeas = [];
-let favorites = new Set();
-let overrides = {};
+/* ── State ─────────────────────────────────────────────────
+   `state` is the single source of truth on this device. In local-only
+   mode it's just saved to localStorage. When Firebase is configured,
+   every mutation writes ONLY the paths that changed (not the whole
+   board) via a multi-path update() — so you and Lilly editing
+   different lists, favorites, or notes at the same moment never
+   overwrite each other. Reads mirror the same shape back in.       */
+const STORAGE_KEY = "anniv-chart-v2";
 
 function defaultState(){
-  return { fri:[], sat:[], sun:[], locker:ACTIVITIES.map(a=>a.id), custom:[], favorites:[], overrides:{} };
+  return { order:{ fri:[], sat:[], sun:[], locker:ACTIVITIES.map(a=>a.id) }, custom:{}, favorites:{}, overrides:{} };
 }
-function loadState(){
+let state = defaultState();
+
+function loadLocal(){
   try{
-    const raw = localStorage.getItem("anniv-chart-v1");
-    if(raw){ return JSON.parse(raw); }
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
   }catch(e){ /* storage unavailable — run in-memory */ }
   return defaultState();
 }
-function currentState(){
-  return {
-    fri:idsIn("day-fri"), sat:idsIn("day-sat"), sun:idsIn("day-sun"),
-    locker:idsIn("locker"), custom:customIdeas,
-    favorites:[...favorites], overrides
-  };
-}
-let pushTimer;
-function saveState(){
-  const state = currentState();
-  try{ localStorage.setItem("anniv-chart-v1", JSON.stringify(state)); }catch(e){}
-  if(fbRef && !applyingRemote){
-    clearTimeout(pushTimer);
-    pushTimer = setTimeout(()=>{
-      fbRef.set(state).catch(()=>setSyncStatus("offline"));
-    }, 300);
-  }
+function persistLocal(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
 }
 function idsIn(elId){
   return [...document.getElementById(elId).querySelectorAll(".card-item")].map(c=>c.dataset.id);
 }
 function baseActivity(id){
-  return ACTIVITIES.find(a=>a.id===id) || customIdeas.find(a=>a.id===id);
+  return ACTIVITIES.find(a=>a.id===id) || state.custom[id];
 }
 function getActivity(id){
   const base = baseActivity(id);
   if(!base) return null;
-  const ov = overrides[id];
+  const ov = state.overrides[id];
   return ov ? {...base, ...ov} : base;
+}
+
+/* Sends only the given paths (relative to the board root) to Firebase.
+   A no-op in local-only mode. */
+function pushPatch(patch){
+  persistLocal();
+  if(!fbRoot) return;
+  fbRoot.update(patch).catch(()=>toast("Couldn't sync that change — check your connection"));
+}
+
+/* Call after a drag completes: diff the 4 lists against known state and
+   push only the ones that actually moved. */
+function commitOrderFromDOM(){
+  const next = { fri:idsIn("day-fri"), sat:idsIn("day-sat"), sun:idsIn("day-sun"), locker:idsIn("locker") };
+  const patch = {};
+  for(const key of ["fri","sat","sun","locker"]){
+    if(JSON.stringify(next[key]) !== JSON.stringify(state.order[key])){
+      patch["order/"+key] = next[key];
+    }
+  }
+  state.order = next;
+  if(Object.keys(patch).length) pushPatch(patch);
+  else persistLocal();
 }
 
 /* ── Rendering ─────────────────────────────────────────── */
@@ -523,33 +537,61 @@ function cardEl(act){
 
 function syncFavIcon(el){
   const btn = el.querySelector(".card-fav");
-  const isFav = favorites.has(el.dataset.id);
+  const isFav = !!state.favorites[el.dataset.id];
   btn.textContent = isFav ? "★" : "☆";
   btn.setAttribute("aria-pressed", isFav ? "true" : "false");
   el.classList.toggle("is-fav", isFav);
 }
 
-function render(state){
-  customIdeas = state.custom || [];
-  favorites = new Set(state.favorites || []);
-  overrides = state.overrides || {};
-  const fill = (elId, ids)=>{
-    const box = document.getElementById(elId);
-    box.innerHTML = "";
-    ids.forEach(id=>{ const a=getActivity(id); if(a) box.appendChild(cardEl(a)); });
-  };
-  fill("day-fri", state.fri); fill("day-sat", state.sat); fill("day-sun", state.sun);
-  fill("locker", state.locker);
+function fillList(elId, ids){
+  const box = document.getElementById(elId);
+  box.innerHTML = "";
+  ids.forEach(id=>{ const a=getActivity(id); if(a) box.appendChild(cardEl(a)); });
+}
+
+/* Full rebuild of all 4 lists from `state`. Preserves any open edit
+   panel (and its unsaved draft text) across the rebuild, since a
+   remote update elsewhere shouldn't blow away what you're mid-typing. */
+function renderAll(){
+  const drafts = {};
+  document.querySelectorAll(".card-item.editing").forEach(el=>{
+    drafts[el.dataset.id] = {
+      title: el.querySelector(".edit-title").value,
+      place: el.querySelector(".edit-place").value,
+      time: el.querySelector(".edit-time").value,
+      note: el.querySelector(".edit-note").value
+    };
+  });
+  fillList("day-fri", state.order.fri);
+  fillList("day-sat", state.order.sat);
+  fillList("day-sun", state.order.sun);
+  fillList("locker", state.order.locker);
   applyFilters();
+  Object.entries(drafts).forEach(([id, d])=>{
+    const el = document.querySelector(`.card-item[data-id="${CSS.escape(id)}"]`);
+    if(!el) return;
+    el.classList.add("editing");
+    el.querySelector(".edit-title").value = d.title;
+    el.querySelector(".edit-place").value = d.place;
+    el.querySelector(".edit-time").value = d.time;
+    el.querySelector(".edit-note").value = d.note;
+  });
 }
 
 /* ── Drag & drop ───────────────────────────────────────── */
+let isDragging = false;
+let pendingRemoteRender = false;
 ["locker","day-fri","day-sat","day-sun"].forEach(id=>{
   new Sortable(document.getElementById(id), {
     group:"chart", animation:150,
     ghostClass:"sortable-ghost", dragClass:"sortable-drag",
     delay:120, delayOnTouchOnly:true,
-    onSort:saveState, onAdd:saveState, onRemove:saveState
+    onStart:()=>{ isDragging = true; },
+    onEnd:()=>{
+      isDragging = false;
+      commitOrderFromDOM();
+      if(pendingRemoteRender){ pendingRemoteRender = false; renderAll(); }
+    }
   });
 });
 
@@ -559,9 +601,10 @@ document.addEventListener("click", e=>{
   if(favBtn){
     const card = favBtn.closest(".card-item");
     const id = card.dataset.id;
-    favorites.has(id) ? favorites.delete(id) : favorites.add(id);
+    if(state.favorites[id]) delete state.favorites[id];
+    else state.favorites[id] = true;
     syncFavIcon(card);
-    saveState();
+    pushPatch({ ["favorites/"+id]: state.favorites[id] ? true : null });
     return;
   }
   const editBtn = e.target.closest(".card-edit-toggle");
@@ -586,22 +629,24 @@ document.addEventListener("click", e=>{
     const id = card.dataset.id;
     const title = card.querySelector(".edit-title").value.trim();
     if(!title){ toast("Give it a name first"); return; }
-    overrides[id] = {
+    const override = {
       title,
       place: card.querySelector(".edit-place").value.trim(),
       time: card.querySelector(".edit-time").value.trim(),
       note: card.querySelector(".edit-note").value.trim()
     };
+    state.overrides[id] = override;
     populateCard(card, getActivity(id));
     card.classList.remove("editing");
-    saveState();
+    pushPatch({ ["overrides/"+id]: override });
     toast("Saved");
     return;
   }
   const removeBtn = e.target.closest(".card-remove");
   if(removeBtn){
     document.getElementById("locker").prepend(removeBtn.closest(".card-item"));
-    saveState(); applyFilters();
+    commitOrderFromDOM();
+    applyFilters();
     return;
   }
 });
@@ -638,9 +683,10 @@ document.querySelectorAll(".preset-chip").forEach(btn=>{
     const p = PRESETS[btn.dataset.preset];
     const used = new Set([...p.fri, ...p.sat, ...p.sun]);
     const locker = ACTIVITIES.map(a=>a.id).filter(id=>!used.has(id))
-                   .concat(customIdeas.map(a=>a.id));
-    render({fri:[...p.fri], sat:[...p.sat], sun:[...p.sun], locker, custom:customIdeas, favorites:[...favorites], overrides});
-    saveState();
+                   .concat(Object.keys(state.custom));
+    state.order = { fri:[...p.fri], sat:[...p.sat], sun:[...p.sun], locker };
+    renderAll();
+    pushPatch({ "order/fri":state.order.fri, "order/sat":state.order.sat, "order/sun":state.order.sun, "order/locker":state.order.locker });
     toast(`Loaded "${btn.textContent.trim()}" — now make it yours`);
   });
 });
@@ -656,11 +702,12 @@ document.getElementById("addBtn").addEventListener("click", ()=>{
     weather:document.getElementById("newWeather").value,
     tags:[], note:""
   };
-  customIdeas.push(act);
+  state.custom[act.id] = act;
+  state.order.locker = [act.id, ...state.order.locker];
   document.getElementById("locker").prepend(cardEl(act));
   document.getElementById("newTitle").value="";
   document.getElementById("newPlace").value="";
-  saveState();
+  pushPatch({ ["custom/"+act.id]: act, "order/locker": state.order.locker });
   toast("Added to the locker");
 });
 
@@ -683,9 +730,9 @@ document.getElementById("copyBtn").addEventListener("click", ()=>{
 
 document.getElementById("resetBtn").addEventListener("click", ()=>{
   if(!confirm("Clear the board and return every idea to the locker? (Favorites and notes stay.)")) return;
-  customIdeas = [];
-  render({ fri:[], sat:[], sun:[], locker:ACTIVITIES.map(a=>a.id), custom:[], favorites:[...favorites], overrides });
-  saveState();
+  state.order = { fri:[], sat:[], sun:[], locker: ACTIVITIES.map(a=>a.id).concat(Object.keys(state.custom)) };
+  renderAll();
+  pushPatch({ "order/fri":[], "order/sat":[], "order/sun":[], "order/locker":state.order.locker });
   toast("Fresh chart");
 });
 
@@ -698,50 +745,87 @@ function toast(msg){
   toastTimer = setTimeout(()=>t.classList.remove("show"), 2600);
 }
 
-/* ── Live sync ─────────────────────────────────────────── */
-let fbRef = null;
-let applyingRemote = false;
-function setSyncStatus(state, text){
+/* ── Live sync ─────────────────────────────────────────────
+   fbRoot points at the whole board node. Instead of one listener on
+   the whole thing, we attach one per top-level slice (each of the 4
+   order lists, custom, favorites, overrides) so a change to any one
+   slice only updates that slice locally — never a full clobber. */
+let fbRoot = null;
+let dataError = false;
+
+function setSyncStatus(connState, text){
   const badge = document.getElementById("syncBadge");
-  badge.dataset.state = state;
+  badge.dataset.state = connState;
   document.getElementById("syncText").textContent = text || (
-    { local:"Local only", connecting:"Connecting…", synced:"Synced live", offline:"Offline — saving locally" }[state]
+    { local:"Local only", connecting:"Connecting…", synced:"Synced live", offline:"Offline — saving locally" }[connState]
   );
 }
+
 if(FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.databaseURL && window.firebase){
   try{
     firebase.initializeApp(FIREBASE_CONFIG);
-    fbRef = firebase.database().ref(BOARD_PATH);
+    fbRoot = firebase.database().ref(BOARD_PATH);
   }catch(e){ console.warn("Firebase init failed", e); }
 }
 
+/* Coalesce bursts of listener callbacks (e.g. an order + custom patch
+   landing together) into a single re-render on the next microtask, so
+   by the time we draw, every slice touched by that write has already
+   been applied to `state`. */
+let renderQueued = false;
+function scheduleRender(){
+  if(isDragging){ pendingRemoteRender = true; return; }
+  if(renderQueued) return;
+  renderQueued = true;
+  Promise.resolve().then(()=>{ renderQueued = false; renderAll(); });
+}
+
 /* ── Boot ──────────────────────────────────────────────── */
-const initial = loadState();
-render(initial);
+state = loadLocal();
+renderAll();
 
-if(fbRef){
+if(fbRoot){
   setSyncStatus("connecting");
-  let dataError = false;
 
-  // .info/connected is a special Firebase path that reliably reports the
-  // actual socket state — this is what drives the badge, so it can't get
-  // stuck if the board-data listener itself stalls.
   firebase.database().ref(".info/connected").on("value", snap => {
     if(dataError) return;
     setSyncStatus(snap.val() === true ? "synced" : "connecting");
   });
 
-  fbRef.on("value", snap => {
-    const remote = snap.val();
-    if(remote){
-      applyingRemote = true;
-      render(remote);
-      try{ localStorage.setItem("anniv-chart-v1", JSON.stringify(remote)); }catch(e){}
-      applyingRemote = false;
-    } else {
-      fbRef.set(currentState());
+  const onError = () => { dataError = true; setSyncStatus("offline", "Sync error — check database rules"); };
+
+  ["fri","sat","sun","locker"].forEach(key=>{
+    fbRoot.child("order/"+key).on("value", snap=>{
+      const val = snap.val();
+      if(val) state.order[key] = val; // null path (not written yet) keeps our local default
+      scheduleRender();
+    }, onError);
+  });
+  fbRoot.child("custom").on("value", snap=>{
+    state.custom = snap.val() || {};
+    scheduleRender();
+  }, onError);
+  fbRoot.child("favorites").on("value", snap=>{
+    state.favorites = snap.val() || {};
+    persistLocal();
+    document.querySelectorAll(".card-item").forEach(syncFavIcon);
+  }, onError);
+  fbRoot.child("overrides").on("value", snap=>{
+    state.overrides = snap.val() || {};
+    persistLocal();
+    document.querySelectorAll(".card-item:not(.editing)").forEach(el=>{
+      const act = getActivity(el.dataset.id);
+      if(act) populateCard(el, act);
+    });
+  }, onError);
+
+  // Seed the database with our local board only if this is a brand new
+  // board (nobody has written the "order" slice yet).
+  fbRoot.child("order").once("value").then(snap=>{
+    if(!snap.exists()){
+      fbRoot.update({ order: state.order, custom: state.custom, favorites: state.favorites, overrides: state.overrides });
     }
-  }, () => { dataError = true; setSyncStatus("offline", "Sync error — check database rules"); });
+  }).catch(onError);
 
   // Fallback in case even .info/connected never reports in (e.g. blocked
   // socket) — don't leave the badge stuck on "Connecting…" forever.
