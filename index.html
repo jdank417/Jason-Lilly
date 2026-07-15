@@ -379,7 +379,10 @@ const FIREBASE_CONFIG = {
   databaseURL: "https://jason-lilly-default-rtdb.firebaseio.com",
   projectId: "jason-lilly"
 };
-const BOARD_PATH = "boards/anniversary-2026";
+/* v3 path: revision-stamped slices. Old cached copies of this page write
+   to the old paths and can't corrupt this data. */
+const BOARD_PATH = "boards/anniversary-2026-v3";
+const SCHEMA = 3;
 
 /* ── Activity data ─────────────────────────────────────────
    weather: sun | rain | either
@@ -426,28 +429,35 @@ const PRESETS = {
 };
 
 /* ── State ─────────────────────────────────────────────────
-   `state` is the single source of truth on this device. In local-only
-   mode it's just saved to localStorage. When Firebase is configured,
-   every mutation writes ONLY the paths that changed (not the whole
-   board) via a multi-path update() — so you and Lilly editing
-   different lists, favorites, or notes at the same moment never
-   overwrite each other. Reads mirror the same shape back in.       */
-const STORAGE_KEY = "anniv-chart-v2";
+   `state` is this device's copy of the board. Every synced slice —
+   each day's list, each favorite, each idea's edits — carries a
+   revision number in `revs`. A write stamps a new (strictly higher)
+   revision; an incoming slice is applied only if its revision is
+   NEWER than ours, and if the server is holding something OLDER we
+   push our copy back up. Convergence is deterministic — never a
+   function of which message happened to arrive last. Lists travel
+   JSON-encoded because Realtime Database silently deletes empty
+   arrays, which would otherwise resurrect cleared days.            */
+const STORAGE_KEY = "anniv-chart-v3";
 
 function defaultState(){
   return { order:{ fri:[], sat:[], sun:[], locker:ACTIVITIES.map(a=>a.id) }, custom:{}, favorites:{}, overrides:{} };
 }
 let state = defaultState();
+let revs = {};   // slice path → last revision seen/written
 
 function loadLocal(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
-    if(raw) return JSON.parse(raw);
+    if(raw){
+      const saved = JSON.parse(raw);
+      if(saved && saved.state) return saved;
+    }
   }catch(e){ /* storage unavailable — run in-memory */ }
-  return defaultState();
+  return { state: defaultState(), revs: {} };
 }
 function persistLocal(){
-  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify({ state, revs })); }catch(e){}
 }
 function idsIn(elId){
   return [...document.getElementById(elId).querySelectorAll(".card-item")].map(c=>c.dataset.id);
@@ -462,13 +472,40 @@ function getActivity(id){
   return ov ? {...base, ...ov} : base;
 }
 
-/* Sends only the given paths (relative to the board root) to Firebase.
-   A no-op in local-only mode. */
-function pushPatch(patch){
+/* New revision for a slice: wall clock, but always strictly greater
+   than anything we've already seen — so a device with a slow clock
+   still wins over data it has knowingly superseded. */
+function stamp(path){
+  revs[path] = Math.max(Date.now(), (revs[path]||0) + 1);
+  return revs[path];
+}
+/* Envelope builders — what actually gets stored per slice. */
+function orderEntry(key){
+  const p = "order/"+key;
+  return { rev: stamp(p), ids: JSON.stringify(state.order[key]) };
+}
+function favEntry(id){
+  const p = "favorites/"+id;
+  return { rev: stamp(p), on: !!state.favorites[id] };
+}
+function overrideEntry(id){
+  const p = "overrides/"+id;
+  return { rev: stamp(p), data: state.overrides[id] };
+}
+function customEntry(id){
+  const p = "custom/"+id;
+  return { rev: stamp(p), data: state.custom[id] };
+}
+
+/* Persist locally and (if syncing) send a multi-path patch. */
+function sendUpdate(patch){
   persistLocal();
   if(!fbRoot) return;
-  fbRoot.update(patch).catch(()=>toast("Couldn't sync that change — check your connection"));
+  fbRoot.update(patch).catch(()=>{
+    setSyncStatus("offline", "Couldn't sync — will retry when reconnected");
+  });
 }
+function pushOrder(key){ sendUpdate({ ["order/"+key]: orderEntry(key) }); }
 
 /* Call after a drag completes: diff the 4 lists against known state and
    push only the ones that actually moved. */
@@ -477,11 +514,11 @@ function commitOrderFromDOM(){
   const patch = {};
   for(const key of ["fri","sat","sun","locker"]){
     if(JSON.stringify(next[key]) !== JSON.stringify(state.order[key])){
-      patch["order/"+key] = next[key];
+      state.order[key] = next[key];
+      patch["order/"+key] = orderEntry(key);
     }
   }
-  state.order = next;
-  if(Object.keys(patch).length) pushPatch(patch);
+  if(Object.keys(patch).length) sendUpdate(patch);
   else persistLocal();
 }
 
@@ -604,7 +641,7 @@ document.addEventListener("click", e=>{
     if(state.favorites[id]) delete state.favorites[id];
     else state.favorites[id] = true;
     syncFavIcon(card);
-    pushPatch({ ["favorites/"+id]: state.favorites[id] ? true : null });
+    sendUpdate({ ["favorites/"+id]: favEntry(id) });
     return;
   }
   const editBtn = e.target.closest(".card-edit-toggle");
@@ -638,7 +675,7 @@ document.addEventListener("click", e=>{
     state.overrides[id] = override;
     populateCard(card, getActivity(id));
     card.classList.remove("editing");
-    pushPatch({ ["overrides/"+id]: override });
+    sendUpdate({ ["overrides/"+id]: overrideEntry(id) });
     toast("Saved");
     return;
   }
@@ -686,7 +723,7 @@ document.querySelectorAll(".preset-chip").forEach(btn=>{
                    .concat(Object.keys(state.custom));
     state.order = { fri:[...p.fri], sat:[...p.sat], sun:[...p.sun], locker };
     renderAll();
-    pushPatch({ "order/fri":state.order.fri, "order/sat":state.order.sat, "order/sun":state.order.sun, "order/locker":state.order.locker });
+    sendUpdate({ "order/fri":orderEntry("fri"), "order/sat":orderEntry("sat"), "order/sun":orderEntry("sun"), "order/locker":orderEntry("locker") });
     toast(`Loaded "${btn.textContent.trim()}" — now make it yours`);
   });
 });
@@ -707,7 +744,7 @@ document.getElementById("addBtn").addEventListener("click", ()=>{
   document.getElementById("locker").prepend(cardEl(act));
   document.getElementById("newTitle").value="";
   document.getElementById("newPlace").value="";
-  pushPatch({ ["custom/"+act.id]: act, "order/locker": state.order.locker });
+  sendUpdate({ ["custom/"+act.id]: customEntry(act.id), "order/locker": orderEntry("locker") });
   toast("Added to the locker");
 });
 
@@ -732,7 +769,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
   if(!confirm("Clear the board and return every idea to the locker? (Favorites and notes stay.)")) return;
   state.order = { fri:[], sat:[], sun:[], locker: ACTIVITIES.map(a=>a.id).concat(Object.keys(state.custom)) };
   renderAll();
-  pushPatch({ "order/fri":[], "order/sat":[], "order/sun":[], "order/locker":state.order.locker });
+  sendUpdate({ "order/fri":orderEntry("fri"), "order/sat":orderEntry("sat"), "order/sun":orderEntry("sun"), "order/locker":orderEntry("locker") });
   toast("Fresh chart");
 });
 
@@ -752,13 +789,16 @@ function toast(msg){
    slice only updates that slice locally — never a full clobber. */
 let fbRoot = null;
 let dataError = false;
+let deviceCount = 0;
 
 function setSyncStatus(connState, text){
   const badge = document.getElementById("syncBadge");
   badge.dataset.state = connState;
-  document.getElementById("syncText").textContent = text || (
+  let label = text || (
     { local:"Local only", connecting:"Connecting…", synced:"Synced live", offline:"Offline — saving locally" }[connState]
   );
+  if(connState === "synced" && deviceCount > 1) label += ` · ${deviceCount} devices`;
+  document.getElementById("syncText").textContent = label;
 }
 
 if(FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.databaseURL && window.firebase){
@@ -780,52 +820,120 @@ function scheduleRender(){
   Promise.resolve().then(()=>{ renderQueued = false; renderAll(); });
 }
 
+/* ── Revision merging ──────────────────────────────────────
+   Each merge answers one question per slice: is the incoming copy
+   newer than mine? Newer → apply it. Older → the server is stale
+   (e.g. my last write never landed before a refresh), so push my
+   copy back up. Equal → it's the echo of my own write; ignore.   */
+function mergeOrder(key, entry){
+  const path = "order/"+key;
+  const localRev = revs[path]||0;
+  if(!entry || typeof entry.rev !== "number"){
+    if(localRev > 0) pushOrder(key);   // server lost/never had it — repair
+    return;
+  }
+  if(entry.rev > localRev){
+    try{ state.order[key] = JSON.parse(entry.ids||"[]"); }catch(e){ return; }
+    revs[path] = entry.rev;
+    persistLocal();
+    scheduleRender();
+  } else if(entry.rev < localRev){
+    pushOrder(key);
+  }
+}
+
+function mergeKeyedMap(slice, remoteMap, applyFn, repushFn){
+  let changed = false;
+  remoteMap = remoteMap || {};
+  for(const [id, entry] of Object.entries(remoteMap)){
+    if(!entry || typeof entry.rev !== "number") continue;
+    const path = slice+"/"+id;
+    const localRev = revs[path]||0;
+    if(entry.rev > localRev){
+      revs[path] = entry.rev;
+      applyFn(id, entry);
+      changed = true;
+    } else if(entry.rev < localRev){
+      repushFn(id);
+    }
+  }
+  // Anything we've stamped locally that the server doesn't know: repair.
+  for(const path of Object.keys(revs)){
+    if(path.startsWith(slice+"/")){
+      const id = path.slice(slice.length+1);
+      if(!(id in remoteMap)) repushFn(id);
+    }
+  }
+  if(changed) persistLocal();
+  return changed;
+}
+
 /* ── Boot ──────────────────────────────────────────────── */
-state = loadLocal();
+const loaded = loadLocal();
+state = loaded.state;
+revs = loaded.revs || {};
 renderAll();
 
 if(fbRoot){
   setSyncStatus("connecting");
 
+  // Presence: a per-tab node that Firebase removes server-side when the
+  // connection drops, so the device count is trustworthy.
+  const presenceRef = fbRoot.child("presence").push();
   firebase.database().ref(".info/connected").on("value", snap => {
     if(dataError) return;
-    setSyncStatus(snap.val() === true ? "synced" : "connecting");
+    if(snap.val() === true){
+      presenceRef.onDisconnect().remove();
+      presenceRef.set(true);
+      setSyncStatus("synced");
+    } else {
+      setSyncStatus("connecting");
+    }
+  });
+  fbRoot.child("presence").on("value", snap => {
+    deviceCount = snap.numChildren();
+    if(document.getElementById("syncBadge").dataset.state === "synced") setSyncStatus("synced");
   });
 
   const onError = () => { dataError = true; setSyncStatus("offline", "Sync error — check database rules"); };
 
   ["fri","sat","sun","locker"].forEach(key=>{
-    fbRoot.child("order/"+key).on("value", snap=>{
-      const val = snap.val();
-      if(val) state.order[key] = val; // null path (not written yet) keeps our local default
-      scheduleRender();
-    }, onError);
+    fbRoot.child("order/"+key).on("value", snap=>mergeOrder(key, snap.val()), onError);
   });
   fbRoot.child("custom").on("value", snap=>{
-    state.custom = snap.val() || {};
-    scheduleRender();
+    const changed = mergeKeyedMap("custom", snap.val(),
+      (id, entry)=>{ state.custom[id] = entry.data; },
+      (id)=>sendUpdate({ ["custom/"+id]: customEntry(id) }));
+    if(changed) scheduleRender();
   }, onError);
   fbRoot.child("favorites").on("value", snap=>{
-    state.favorites = snap.val() || {};
-    persistLocal();
-    document.querySelectorAll(".card-item").forEach(syncFavIcon);
+    const changed = mergeKeyedMap("favorites", snap.val(),
+      (id, entry)=>{ if(entry.on) state.favorites[id] = true; else delete state.favorites[id]; },
+      (id)=>sendUpdate({ ["favorites/"+id]: favEntry(id) }));
+    if(changed){
+      document.querySelectorAll(".card-item").forEach(syncFavIcon);
+      applyFilters();
+    }
   }, onError);
   fbRoot.child("overrides").on("value", snap=>{
-    state.overrides = snap.val() || {};
-    persistLocal();
-    document.querySelectorAll(".card-item:not(.editing)").forEach(el=>{
-      const act = getActivity(el.dataset.id);
-      if(act) populateCard(el, act);
-    });
+    const changed = mergeKeyedMap("overrides", snap.val(),
+      (id, entry)=>{ state.overrides[id] = entry.data; },
+      (id)=>sendUpdate({ ["overrides/"+id]: overrideEntry(id) }));
+    if(changed){
+      document.querySelectorAll(".card-item:not(.editing)").forEach(el=>{
+        const act = getActivity(el.dataset.id);
+        if(act) populateCard(el, act);
+      });
+    }
   }, onError);
 
-  // Seed the database with our local board only if this is a brand new
-  // board (nobody has written the "order" slice yet).
-  fbRoot.child("order").once("value").then(snap=>{
-    if(!snap.exists()){
-      fbRoot.update({ order: state.order, custom: state.custom, favorites: state.favorites, overrides: state.overrides });
-    }
-  }).catch(onError);
+  // If a future version of this page ever bumps the schema, tell stale
+  // tabs to refresh instead of letting them write old-shaped data.
+  fbRoot.child("meta/schema").once("value").then(snap=>{
+    const v = snap.val();
+    if(v == null) fbRoot.child("meta/schema").set(SCHEMA);
+    else if(v > SCHEMA) setSyncStatus("offline", "This page is out of date — refresh to keep syncing");
+  }).catch(()=>{});
 
   // Fallback in case even .info/connected never reports in (e.g. blocked
   // socket) — don't leave the badge stuck on "Connecting…" forever.

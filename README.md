@@ -40,9 +40,27 @@ devices.
 
 Rather than overwriting the entire board on every change, the app syncs each
 piece independently: each day's list, each idea's favorite state, and each
-idea's edits are stored and written separately. That means you and Lilly can
+idea's edits are stored and written separately. That means two people can
 drag different ideas, favorite different things, or edit different notes at
-the exact same moment with zero conflict — nothing gets clobbered. The one
-case that still resolves as "last save wins" is two people reordering the
-*same day's list* in the same instant, which is rare enough in practice not
-to matter.
+the exact same moment with zero conflict — nothing gets clobbered.
+
+Every synced piece also carries a **revision number**. A device only accepts
+incoming data that is *newer* than what it already has, and if it sees the
+server holding something *older* than its own copy, it pushes its copy back
+up (self-healing). So the winner is always the most recent edit — never
+"whichever message happened to arrive last," which is what previously caused
+the board to flash correct data and then revert on refresh.
+
+Two implementation notes, for the curious:
+
+- Lists are stored JSON-encoded because Realtime Database silently deletes
+  empty arrays — stored raw, "I cleared Friday" would never sync and the
+  other device would resurrect the old list.
+- The data lives at a versioned path (`boards/anniversary-2026-v3`), so a
+  stale cached copy of the page writing the old data shape physically can't
+  corrupt the current board. The sync badge also shows a device count
+  ("Synced live · 2 devices") so you can see both ends are connected.
+
+The one case that still resolves as "newest wins" rather than merging is two
+people reordering the *same day's list* within the same second — rare enough
+in practice not to matter.
