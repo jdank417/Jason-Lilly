@@ -408,7 +408,7 @@ const ACTIVITIES = [
  {id:"waltham-thrift", title:"Waltham thrift stops", place:"near Moody St", weather:"either", tags:["thrift"], note:"Secondhand browsing between moving trips."},
  {id:"decordova", title:"deCordova Sculpture Park & Museum", place:"Lincoln", weather:"sun", tags:["crafts","nature"], note:"Art in the woods, 15 min from Waltham. Indoor galleries are closed for renovation until 2028 — sculpture trails, cafe, and store are open.", phone:"(781) 259-8355", website:"https://thetrustees.org/place/decordova/"},
  {id:"encore", title:"Encore Boston Harbor", place:"Everett", weather:"either", tags:["games","food"], note:"On the drive Waltham → Salem. Casino date night.", phone:"(857) 770-7000", website:"https://www.encorebostonharbor.com/"},
- {id:"nbpt", title:"Newburyport downtown + Oldies Marketplace", place:"Newburyport", weather:"either", tags:["thrift"], note:"Big antique/vintage warehouse plus brick downtown."},
+ {id:"nbpt", title:"Newburyport downtown + Oldies Marketplace", place:"27 Water St, Newburyport", weather:"either", tags:["thrift"], note:"Big antique/vintage warehouse plus brick downtown. Hours vary seasonally — call ahead.", phone:"(978) 465-0643", website:"https://www.oldies-ma.com/"},
  {id:"plum", title:"Parker River Wildlife Refuge", place:"Plum Island", weather:"sun", tags:["nature"], note:"Boardwalks, dunes, birds — drive-through friendly.", phone:"(978) 465-5753", website:"https://www.fws.gov/refuge/parker-river"},
  {id:"maudslay", title:"Maudslay State Park", place:"Newburyport", weather:"sun", tags:["nature"], note:"Old estate grounds and gardens along the Merrimack.", phone:"(978) 465-7223", website:"https://www.mass.gov/locations/maudslay-state-park"},
  {id:"bearskin", title:"Bearskin Neck shops & galleries", place:"Rockport", weather:"sun", tags:["thrift","crafts"], note:"Artist studios, fudge, and Motif No. 1."},
@@ -418,7 +418,7 @@ const ACTIVITIES = [
  {id:"woodmans", title:"Fried clams at Woodman's", place:"Essex", weather:"either", tags:["food"], note:"The classic roadside clam shack, since 1914."},
  {id:"essex-antique", title:"Essex antique shop crawl", place:"Essex", weather:"either", tags:["thrift"], note:"A whole town of antique barns on Route 133."},
  {id:"crane", title:"Crane Estate grounds at Castle Hill", place:"Ipswich", weather:"sun", tags:["nature"], note:"Grand Allée lawn rolling straight to the sea.", phone:"(978) 356-4351", website:"https://thetrustees.org/place/castle-hill-on-the-crane-estate/"},
- {id:"pottery", title:"Pottery-painting session", place:"North Shore studio", weather:"rain", tags:["crafts"], note:"Book a walk-in slot; take home a keepsake."},
+ {id:"pottery", title:"Pottery painting at Jewell Town Pottery", place:"77 Elm St, Amesbury", weather:"rain", tags:["crafts"], note:"Paint and personalize your own piece in a relaxed studio. Cost varies by piece.", phone:"(978) 500-0853", website:"https://www.jewelltownpottery.com/"},
  {id:"candles", title:"Candle-pouring workshop", place:"Salem area", weather:"rain", tags:["crafts"], note:"Anniversary-scented — check weekend openings."},
  {id:"willows", title:"Salem Willows arcade & waterfront", place:"Salem", weather:"either", tags:["games","nature"], note:"Skee-ball, popcorn, and a breezy point park.", phone:"(978) 745-0251", website:"https://willowsarcade.com/"},
  {id:"derby", title:"Sunset walk to Derby Wharf Light", place:"Salem", weather:"sun", tags:["nature"], note:"Ten flat minutes out to the little lighthouse."},
@@ -440,7 +440,10 @@ const ACTIVITIES = [
  {id:"turners", title:"Turner's Seafood at Lyceum Hall", place:"Salem", weather:"either", tags:["food"], note:"Fresh seafood in a historic downtown hall.", phone:"(978) 745-7665", website:"https://www.turners-seafood.com/"},
  {id:"sealevel", title:"Sea Level Oyster Bar", place:"Salem", weather:"either", tags:["food"], note:"Raw bar and harbor views on Pickering Wharf.", phone:"(978) 741-0555", website:"https://sealeveloysterbar.com/"},
  {id:"riverwalk", title:"Riverwalk Brewing taproom", place:"Newburyport", weather:"either", tags:["food"], note:"Riverside brewery near the Newburyport waterfront.", phone:"(978) 499-2337", website:"https://riverwalkbrewing.com/"},
- {id:"stained-hourglass", title:"Stained Hourglass Escapes", place:"Salem", weather:"rain", tags:["games"], note:"One-hour puzzle escape room downtown — book ahead.", phone:"(978) 607-4273", website:"https://www.stainedhourglass.com/"}
+ {id:"stained-hourglass", title:"Stained Hourglass Escapes", place:"Salem", weather:"rain", tags:["games"], note:"One-hour puzzle escape room downtown — book ahead.", phone:"(978) 607-4273", website:"https://www.stainedhourglass.com/"},
+ {id:"firehouse", title:"Show at Firehouse Center for the Arts", place:"1 Market Sq, Newburyport", weather:"rain", tags:["crafts"], note:"Live theater, concerts, or comedy in a historic waterfront firehouse. Advance tickets recommended.", cost:"~$20–$60/ticket", phone:"(978) 462-7336", website:"https://firehouse.org/"},
+ {id:"harbortours", title:"Sunset cruise with Yankee Clipper", place:"Waterfront Promenade Park, Newburyport", weather:"sun", tags:["sailing"], note:"90-minute narrated cruise through the harbor and Merrimack River at sunset. Seasonal, ticketed — check the website for current schedule and pricing.", phone:"(603) 682-2293", website:"https://www.harbortours.com/"},
+ {id:"waterfrontpark", title:"Waterfront Park & Merrimack River boardwalk", place:"4 Water St, Newburyport", weather:"sun", tags:["nature"], note:"1,100-foot riverside boardwalk with benches, a lawn, and six public access points — walking distance from downtown shops.", cost:"Free", website:"https://newburyportwaterfronttrust.org/"}
 ];
 
 const PRESETS = {
@@ -585,7 +588,7 @@ function populateCard(el, act){
   const pennant = el.querySelector(".pennant");
   pennant.className = `pennant ${act.weather}`;
   pennant.textContent = WEATHER_LABELS[act.weather];
-  el.querySelector(".card-meta").textContent = [act.time, act.place].filter(Boolean).join(" · ");
+  el.querySelector(".card-meta").textContent = [act.time, act.place, act.cost].filter(Boolean).join(" · ");
   el.querySelector(".card-note").textContent = act.note || "";
   el.querySelector(".card-tags").innerHTML = (act.tags||[]).map(t=>`<span class="tag">${TAG_LABELS[t]||t}</span>`).join("");
   const contact = el.querySelector(".card-contact");
