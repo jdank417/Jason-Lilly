@@ -44,22 +44,32 @@ idea's edits are stored and written separately. That means two people can
 drag different ideas, favorite different things, or edit different notes at
 the exact same moment with zero conflict — nothing gets clobbered.
 
-Every synced piece also carries a **revision number**. A device only accepts
-incoming data that is *newer* than what it already has, and if it sees the
-server holding something *older* than its own copy, it pushes its copy back
-up (self-healing). So the winner is always the most recent edit — never
-"whichever message happened to arrive last," which is what previously caused
-the board to flash correct data and then revert on refresh.
+Every synced piece also carries a **revision** — a counter plus the id of the
+device that wrote it, never a wall-clock timestamp. (An earlier version of
+this used `Date.now()` as the revision, which meant two phones with slightly
+different clocks could make the *older* edit always win — the fix is a
+[logical clock](https://en.wikipedia.org/wiki/Logical_clock), not a wall
+clock.) A device only accepts incoming data ordered *after* its own copy; if
+it sees the server holding something ordered *before* its own copy, it
+pushes its copy back up (self-healing). Two devices that both write the same
+revision number at the same moment still resolve identically on both ends,
+by comparing device ids as a tiebreaker. So the winner is always well-defined
+— never "whichever message happened to arrive last," which is what
+previously caused the board to flash correct data and then revert.
 
-Two implementation notes, for the curious:
+A few implementation notes, for the curious:
 
 - Lists are stored JSON-encoded because Realtime Database silently deletes
   empty arrays — stored raw, "I cleared Friday" would never sync and the
   other device would resurrect the old list.
-- The data lives at a versioned path (`boards/anniversary-2026-v3`), so a
-  stale cached copy of the page writing the old data shape physically can't
-  corrupt the current board. The sync badge also shows a device count
-  ("Synced live · 2 devices") so you can see both ends are connected.
+- The data lives at a versioned path (`boards/anniversary-2026-v4`), so a
+  stale cached copy of the page writing an old data shape physically can't
+  corrupt the current board. The footer shows a `BUILD` number — if your
+  phone and Lilly's ever show different numbers, one of you is on a cached
+  copy and needs a hard refresh.
+- The sync badge shows a live device count ("Synced live · 2 devices"),
+  counted by distinct device id rather than by connection, so two tabs open
+  on the same phone still count as one device.
 
 The one case that still resolves as "newest wins" rather than merging is two
 people reordering the *same day's list* within the same second — rare enough
