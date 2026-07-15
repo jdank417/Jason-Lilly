@@ -1,7 +1,8 @@
-# Jason-Lilly
+# Jason & Lilly's Anniversary Chart
 
-A drag-and-drop weekend planner for the anniversary trip (July 31 – August 2, 2026).
-Open `index.html` in a browser — no build step, no install.
+A drag-and-drop weekend planner for Jason & Lilly's one-year anniversary trip
+(July 31 – August 2, 2026). Open `index.html` in a browser — no build step,
+no install.
 
 ## Features
 
